@@ -1,0 +1,160 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build: graph_builder",
+			"type": "shell",
+			"command": "g++",
+			"args": [
+				"-std=c++17",
+				"-g",
+				"${workspaceFolder}/src/lib/util/*.cpp",
+				"${workspaceFolder}/src/lib/*.cpp",
+				"${workspaceFolder}/src/graph_builder.cpp",
+				"-o",
+				"${workspaceFolder}/exec/graph_builder.exe"
+			],
+			"problemMatcher": "$gcc",
+			"group": {
+                "kind": "build",
+                "isDefault": true
+            }
+		},
+		{
+			"label": "Build: data_analyzer",
+			"type": "shell",
+			"command": "g++",
+			"args": [
+				"-std=c++17",
+				"-g",
+				"${workspaceFolder}/src/lib/util/*.cpp",
+				"${workspaceFolder}/src/data_analyzer.cpp",
+				"-o",
+				"${workspaceFolder}/exec/data_analyzer.exe"
+			],
+			"problemMatcher": "$gcc",
+			"group": "build"
+		},
+		{
+			"label": "Build: data_reader",
+			"type": "shell",
+			"command": "g++",
+			"args": [
+				"-std=c++17",
+				"-g",
+				"${workspaceFolder}/src/lib/util/*.cpp",
+				"${workspaceFolder}/src/data_reader.cpp",
+				"-o",
+				"${workspaceFolder}/exec/data_reader.exe"
+			],
+			"problemMatcher": "$gcc",
+			"group": {
+                "kind": "build",
+                "isDefault": true
+            }
+		},
+		{
+			"label": "Run: graph_builder",
+			"type": "shell",
+			"command": "${workspaceFolder}/exec/graph_builder.exe",
+			"args": [
+				"false",
+				"219",
+				"128",
+				"20",
+				"40",
+				"100",
+				"0.33",
+				"false",
+				"false",
+				"false",
+				"${workspaceRoot}/data/graphs/",
+				"${workspaceFolder}/data/coords/${input:gb_coords_file}.bin"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Run: data_analyzer",
+			"type": "shell",
+			"command": "${workspaceFolder}/exec/data_analyzer.exe",
+			"args": [
+				"false",
+				"219",
+				"${input:workers_len}",
+				"${workspaceFolder}/data/coords/${input:coords_file}.bin"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Run: data_reader",
+			"type": "shell",
+			"command": "${workspaceFolder}/exec/data_reader.exe",
+			"args": [
+				"false",
+				"219",
+				"${workspaceFolder}/data/coords/${input:coords_file}.bin"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Build and run: graph_builder",
+			"type": "shell",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"Build: graph_builder",
+				"Run: graph_builder"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Build and run: data_analyzer",
+			"type": "shell",
+			"dependsOrder": "sequence",
+			"dependsOn":[
+				"Build: data_analyzer",
+				"Run: data_analyzer"
+			],
+			"problemMatcher": []
+		},
+		{
+			"label": "Build and run: data_reader",
+			"type": "shell",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"Build: data_reader",
+				"Run: data_reader"
+			],
+			"problemMatcher": []
+		}
+	],
+	"inputs": [
+		{
+			"id": "gb_coords_file",
+			"type": "pickString",
+			"description": "Choose file from which the graph will be built:",
+			"options": [
+				"",
+				"siftQ1M",
+				"knnQA1M"
+			],
+			"default": "sift1M"
+		},
+		{
+			"id": "workers_len",
+			"type": "promptString",
+			"description": "Enter number of threads to use:",
+			"default": "4"
+		},
+		{
+			"id": "coords_file",
+			"type": "pickString",
+			"description": "Choose file that will be analyzed:",
+			"options": [
+				"knnQA1M",
+				"sift1M",
+				"siftQ1M"
+			],
+			"default": "knnQA1M"
+		}
+	]
+}

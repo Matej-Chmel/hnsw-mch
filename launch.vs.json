@@ -1,0 +1,141 @@
+{
+	"defaults": {},
+	"version": "0.2.1",
+	"configurations": [
+		{
+			"type": "default",
+			"project": "src/graph_builder.cpp",
+			"name": "GraphBuilder: no params"
+		},
+		{
+			"type": "default",
+			"project": "src\\graph_builder.cpp",
+			"name": "GraphBuilder: sift 1M",
+			"args": [
+				true,
+				219,
+				128,
+				20,
+				40,
+				100,
+				"0.33",
+				false,
+				false,
+				false,
+				"${workspaceRoot}/data/graphs/",
+				"${workspaceRoot}/data/coords/sift1M.bin"
+			]
+		},
+		{
+			"type": "default",
+			"project": "src\\graph_builder.cpp",
+			"name": "GraphBuilder: sift Q 1M",
+			"args": [
+				true,
+				219,
+				128,
+				20,
+				40,
+				100,
+				"0.33",
+				false,
+				false,
+				false,
+				"${workspaceRoot}/data/graphs/",
+				"${workspaceRoot}/data/coords/siftQ1M.bin"
+			]
+		},
+		{
+			"type": "default",
+			"project": "src\\graph_builder.cpp",
+			"name": "GraphBuilder: knnQA1M",
+			"args": [
+				true,
+				219,
+				128,
+				20,
+				40,
+				100,
+				"0.33",
+				false,
+				false,
+				false,
+				"${workspaceRoot}/data/graphs/",
+				"${workspaceRoot}/data/coords/knnQA1M.bin"
+			]
+		},
+		{
+			"type": "default",
+			"project": "src/data_analyzer.cpp",
+			"name": "DataAnalyzer: no params"
+		},
+		{
+			"type": "default",
+			"project": "src/data_analyzer.cpp",
+			"name": "DataAnalyzer: knnQA1M",
+			"args": [
+				true,
+				219,
+				4,
+				"${workspaceRoot}/data/coords/knnQA1M.bin"
+			]
+		},
+		{
+			"type": "default",
+			"project": "src/data_analyzer.cpp",
+			"name": "DataAnalyzer: sift 1M",
+			"args": [
+				true,
+				219,
+				8,
+				"${workspaceRoot}/data/coords/sift1M.bin"
+			]
+		},
+		{
+			"type": "default",
+			"project": "src/data_analyzer.cpp",
+			"name": "DataAnalyzer: sift Q 1M",
+			"args": [
+				true,
+				219,
+				4,
+				"${workspaceRoot}/data/coords/siftQ1M.bin"
+			]
+		},
+		{
+			"type": "default",
+			"project": "src/data_reader.cpp",
+			"name": "DataReader: no params"
+		},
+		{
+			"type": "default",
+			"project": "src/data_reader.cpp",
+			"name": "DataReader: knnQA1M",
+			"args": [
+				true,
+				219,
+				"${workspaceRoot}/data/coords/knnQA1M.bin"
+			]
+		},
+		{
+			"type": "default",
+			"project": "src/data_reader.cpp",
+			"name": "DataReader: sift 1M",
+			"args": [
+				true,
+				219,
+				"${workspaceRoot}/data/coords/sift1M.bin"
+			]
+		},
+		{
+			"type": "default",
+			"project": "src/data_reader.cpp",
+			"name": "DataReader: sift Q 1M",
+			"args": [
+				true,
+				219,
+				"${workspaceRoot}/data/coords/siftQ1M.bin"
+			]
+		}
+	]
+}

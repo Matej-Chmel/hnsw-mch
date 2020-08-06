@@ -1,0 +1,10 @@
+/.vs/
+/.vscode/settings.json
+/data/coords/*
+!/data/coords/README.md
+/data/graphs/*
+!/data/graphs/README.md
+/exec/*
+!/exec/README.md
+/out/
+/.editorconfig
