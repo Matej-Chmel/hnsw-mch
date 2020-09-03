@@ -4,6 +4,12 @@ This is my implementation of the Hiearchical Navigable Small World (HNSW) data s
 
 Their implementation can be found at [github](https://github.com/nmslib/hnswlib).
 
+## Supported platforms
+- Linux
+- Windows
+
+The source uses preprocessor to build cross-platform code.
+
 ## Workspace
 
 - Supports Visual Studio Code with [C/C++ extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools) and [tasks](.vscode/tasks.json).
