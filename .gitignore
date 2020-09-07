@@ -7,4 +7,3 @@
 /exec/*
 !/exec/README.md
 /out/
-/.editorconfig
