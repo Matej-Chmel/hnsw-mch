@@ -1,90 +1,15 @@
 {
-    "version": "0.2.0",
+	"version": "0.2.0",
 	"configurations": [
 		{
-            "name": "Debug: graph_builder",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/exec/graph_builder.exe",
-            "args": [
-				"false",
-				"219",
-				"128",
-				"20",
-				"40",
-				"100",
-				"0.33",
-				"false",
-				"false",
-				"false",
-				"${workspaceRoot}/data/graphs/",
-				"${workspaceFolder}/data/coords/${input:gb_coords_file}.bin"
-			],
-			"cwd": "${workspaceFolder}",
-            "MIMode": "gdb",
-            "miDebuggerPath": "gdb.exe"
-            //"preLaunchTask": "Build: graph_builder"
-		},
-		{
-			"name": "Debug: data_analyzer",
-			"type": "cppdbg",
+			"name": "Debug",
+			"type": "python",
 			"request": "launch",
-			"program": "${workspaceFolder}/exec/data_analyzer.exe",
+			"module": "src.main",
 			"args": [
-				"false",
-				"219",
-				"${input:workers_len}",
-				"${workspaceFolder}/data/coords/${input:coords_file}.bin"
+				"${workspaceFolder}/data/args/1.py"
 			],
-			"cwd": "${workspaceFolder}",
-            "MIMode": "gdb",
-			"miDebuggerPath": "gdb.exe",
-			//"preLaunchTask": "Build: data_analyzer"
-		},
-		{
-			"name": "Debug: data_reader",
-			"type": "cppdbg",
-			"request": "launch",
-			"program": "${workspaceFolder}/exec/data_reader.exe",
-			"args": [
-				"false",
-				"219",
-				"${workspaceFolder}/data/coords/${input:coords_file}.bin"
-			],
-			"cwd": "${workspaceFolder}",
-            "MIMode": "gdb",
-			"miDebuggerPath": "gdb.exe",
-			//"preLaunchTask": "Build: data_reader"
-		}
-	],
-	"inputs": [
-		{
-			"id": "gb_coords_file",
-			"type": "pickString",
-			"description": "Choose file from which the graph will be built:",
-			"options": [
-				"",
-				"siftQ1M",
-				"knnQA1M"
-			],
-			"default": "sift1M"
-		},
-		{
-			"id": "workers_len",
-			"type": "promptString",
-			"description": "Enter number of threads to use:",
-			"default": "4"
-		},
-		{
-			"id": "coords_file",
-			"type": "pickString",
-			"description": "Choose file that will be analyzed:",
-			"options": [
-				"knnQA1M",
-				"sift1M",
-				"siftQ1M"
-			],
-			"default": "knnQA1M"
+			"cwd": "${workspaceFolder}"
 		}
 	]
 }
