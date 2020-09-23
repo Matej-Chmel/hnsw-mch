@@ -28,10 +28,13 @@ def new_bruteforce(dataset, queries, k_to_return):
 	with open(unique_filename(coords_, 'bin', len(dataset[0]), len(dataset)), mode='wb+') as file:
 		array('L', neighbors).tofile(file)
 
-def percentage_correct(bruteforce_indexes, search_results):
-	bruteforce_ids = [item[0] for item in bruteforce_indexes]
-	true_positive = [(item.id in bruteforce_ids) for item in search_results]
-	return len(true_positive) / len(graph_indexes) * 100
+def percentages_correct(bruteforce_results, search_results):
+	out = []
+	for b, s in zip(bruteforce_results, search_results):
+		b_ids = [item[0] for item in b]
+		correct = [(item.id in b_ids) for item in s]
+		out.append(len(correct) / len(s) * 100)
+	return out
 
 def build_graph():
 	graph = Graph.from_coords(metadata, coords_(metadata['coords_path']))
@@ -42,9 +45,12 @@ def measure_graph():
 	dataset = [item.coords for item in graph]
 	queries = read_dataset(graph.dimensions, metadata['n_queries'], coords_(metadata['queries_path']))
 	k_to_return = metadata['k_to_return']
-	bruteforce_indexes = [bruteforce(dataset, item, k_to_return) for item in queries]
+	bruteforce_results = [bruteforce(dataset, item, k_to_return) for item in queries]
 	search_results = [graph.search(Element(-1, -1, coords), k_to_return) for coords in queries]
-	print(f'Percentage or correct indexes is {percentage_correct(bruteforce_indexes, search_results)}')
+	print('\n'.join(
+		f'{p} %'
+		for p in percentages_correct(bruteforce_results, search_results)
+	)
 
 def build_dataset():
 	new_dataset(metadata['dimensions'], metadata['n_elements'], metadata['is_query'])
