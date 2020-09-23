@@ -50,7 +50,7 @@ def measure_graph():
 	print('\n'.join(
 		f'{p} %'
 		for p in percentages_correct(bruteforce_results, search_results)
-	)
+	))
 
 def build_dataset():
 	new_dataset(metadata['dimensions'], metadata['n_elements'], metadata['is_query'])
