@@ -1,4 +1,5 @@
 {
+	'task': 'build graph',
 	'dimensions': 128,
 	'm': 20,
 	'mmax': 40,
@@ -6,5 +7,6 @@
 	'ml': 0.33,
 	'use_heuristic': False,
 	'ext_cand': False,
-	'keep_pruned': False
+	'keep_pruned': False,
+	'coords_path': '128_1000_e_1.bin'
 }

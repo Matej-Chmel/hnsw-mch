@@ -12,12 +12,32 @@
 			"args": [
 				"-m",
 				"src.main",
-				"${workspaceFolder}/data/args/1.py"
+				"${workspaceFolder}/data/tasks/${input:type}_${input:rank}.py"
 			],
 			"options": {
 				"cwd": "${workspaceFolder}"
 			},
 			"problemMatcher": []
+		}
+	],
+	"inputs": [
+		{
+			"id": "type",
+			"type": "pickString",
+			"description": "Choose the task type",
+			"options": [
+				"dataset_e",
+				"dataset_q",
+				"build_graph",
+				"measure_graph"
+			],
+			"default": "dataset_e"
+		},
+		{
+			"id": "rank",
+			"type": "promptString",
+			"description": "Enter number of the task in group",
+			"default": "1"
 		}
 	]
 }

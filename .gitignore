@@ -1,3 +1,4 @@
 __pycache__
 *.bin
 /.vscode/settings.json
+/data/graphs/*.py
