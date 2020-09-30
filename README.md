@@ -3,9 +3,6 @@ This is my implementation of the Hiearchical Navigable Small World (HNSW) data s
 
 Their implementation can be found at [github](https://github.com/nmslib/hnswlib).
 
-## Why Python?
-Although Python is not suitable for developing memory-intensive datastructures, I will temporarily implement this project in Python to lay out the basic concepts in shorter development time.
-
 ## Supported platforms
 - Linux
 - Windows

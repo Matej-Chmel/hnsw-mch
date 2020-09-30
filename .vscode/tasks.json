@@ -2,42 +2,38 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Run",
-			"linux": {
-				"command": "python"
-			},
-			"windows": {
-				"command": "py"
-			},
+			"label": "Build",
+			"type": "shell",
+			"command": "g++",
 			"args": [
-				"-m",
-				"src.main",
-				"${workspaceFolder}/data/tasks/${input:type}_${input:rank}.py"
+				"-std=c++17",
+				"-g",
+				"${workspaceFolder}/src/lib/*.cpp",
+				"${workspaceFolder}/src/main.cpp",
+				"-o",
+				"${workspaceFolder}/exec/main.exe"
 			],
-			"options": {
-				"cwd": "${workspaceFolder}"
-			},
-			"problemMatcher": []
-		}
-	],
-	"inputs": [
-		{
-			"id": "type",
-			"type": "pickString",
-			"description": "Choose the task type",
-			"options": [
-				"dataset_e",
-				"dataset_q",
-				"build_graph",
-				"measure_graph"
-			],
-			"default": "dataset_e"
+			"problemMatcher": "$gcc",
+			"group": {
+                "kind": "build",
+                "isDefault": true
+            }
 		},
 		{
-			"id": "rank",
-			"type": "promptString",
-			"description": "Enter number of the task in group",
-			"default": "1"
+			"label": "Run",
+			"type": "shell",
+			"command": "${workspaceFolder}/exec/main.exe",
+			"problemMatcher": []
+		},
+		{
+			"label": "Build and run",
+			"type": "shell",
+			"dependsOrder": "sequence",
+			"dependsOn": [
+				"Build",
+				"Run"
+			],
+			"problemMatcher": []
 		}
 	]
 }
