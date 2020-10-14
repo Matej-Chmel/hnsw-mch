@@ -6,7 +6,6 @@ namespace mch
 	class Node
 	{
 		vector<vector<Node*>> layers;
-		// vector<Node*>
 
 	public:
 		float* coords;

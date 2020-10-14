@@ -6,6 +6,35 @@ namespace mch
 	GraphParams::GraphParams(size_t ef, size_t m, float ml, size_t mmax, bool use_heuristic, bool extend_candidates, bool keep_pruned):
 		ef(ef), m(m), ml(ml), mmax(mmax), use_heuristic(use_heuristic), extend_candidates(extend_candidates), keep_pruned(keep_pruned)
 	{}
+	void GraphParams::set(string key, void* value)
+	{
+		if(key == r_ef)
+			this->ef = *(size_t*)value;
+		else if(key == r_m)
+			this->m = *(size_t*)value;
+		else if(key == r_ml)
+			this->ml = *(float*)value;
+		else if(key == r_mmax)
+			this->mmax = *(size_t*)value;
+		else if(key == r_use_heuristic)
+			this->use_heuristic = *(bool*)value;
+		else if(key == r_extend_candidates)
+			this->extend_candidates = *(bool*)value;
+		else
+			this->keep_pruned = *(bool*)value;
+	}
+	BuildMeasurement::BuildMeasurement(char* name):
+		name(name), build_ms(0), approx_ms(0), median_accuracy(0)
+	{}
+	BuildMeasurement::BuildMeasurement(BuildMeasurement&& moved):
+		name(moved.name), build_ms(moved.build_ms), approx_ms(moved.approx_ms), median_accuracy(moved.median_accuracy)
+	{
+		moved.name = nullptr;
+	}
+	BuildMeasurement::~BuildMeasurement()
+	{
+		delete[] this->name;
+	}
 	void Graph::set_entry(Node* query)
 	{
 		this->entry = query;
@@ -205,9 +234,9 @@ namespace mch
 		for(size_t i = 0; i < data->n_elements; i++)
 			this->nodes.emplace_back(data->node_coords + i * data->dimensions);
 	}
-	BuildMeasurement Graph::build()
+	BuildMeasurement Graph::build(char* name, ExclusiveBar& progress)
 	{
-		BuildMeasurement output;
+		BuildMeasurement output(name);
 		vector<vector<float*>> results;
 		vector<size_t> target;
 
@@ -219,7 +248,6 @@ namespace mch
 
 		PERF
 		{
-			ProgressBar progress("Inserting elements", this->data->n_elements - 1);
 			this->nodes.front().init(this->generate_level());
 			this->set_entry(&this->nodes.front());
 			
@@ -233,7 +261,6 @@ namespace mch
 
 		PERF
 		{
-			ProgressBar progress("Running approximate search", this->data->n_queries);
 			for(size_t i = 0; i < this->data->n_queries; i++)
 			{
 				results.push_back(this->approx_search(this->data->query_coords + i * this->data->dimensions));
