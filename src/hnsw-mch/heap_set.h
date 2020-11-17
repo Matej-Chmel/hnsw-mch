@@ -61,8 +61,8 @@ namespace mch
 		HeapItem& front();
 		HeapItem pop_front();
 		void remove_front();
-		vector<float*> k_sorted_coords(size_t& k);
-		vector<Node*> k_sorted_nodes(size_t& k);
+		vector<float*> k_sorted_coords(size_t k);
+		vector<Node*> k_sorted_nodes(size_t k);
 		vector<Node*> to_vector();
 
 		iterator begin();
@@ -149,7 +149,7 @@ namespace mch
 	}
 	template<typename comparator>
 	inline
-	vector<float*> HeapSet<comparator>::k_sorted_coords(size_t& k)
+	vector<float*> HeapSet<comparator>::k_sorted_coords(size_t k)
 	{
 		if constexpr(is_same<comparator, nearest>::value)
 			sort_heap(this->items.begin(), this->items.end(), this->cmp);
@@ -163,13 +163,17 @@ namespace mch
 	}
 	template<typename comparator>
 	inline
-	vector<Node*> HeapSet<comparator>::k_sorted_nodes(size_t& k)
+	vector<Node*> HeapSet<comparator>::k_sorted_nodes(size_t k)
 	{
 		sort_heap(this->items.begin(), this->items.end(), this->cmp);
 		vector<Node*> output;
 		output.reserve(k);
-		for(const auto item : this->items)
-			output.emplace_back(item.node);
+
+		if(this->items.size() < k)
+			k = this->items.size();
+
+		for(size_t i = 0; i < k; i++)
+			output.emplace_back(this->items[i].node);
 		return move(output);
 	}
 	template<typename comparator>

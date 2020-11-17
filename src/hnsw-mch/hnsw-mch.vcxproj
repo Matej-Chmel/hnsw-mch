@@ -18,6 +18,32 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="concurrent_progress.h" />
+    <ClInclude Include="console.h" />
+    <ClInclude Include="dataset.h" />
+    <ClInclude Include="file_util.h" />
+    <ClInclude Include="graph.h" />
+    <ClInclude Include="heap_set.h" />
+    <ClInclude Include="imports.h" />
+    <ClInclude Include="node.h" />
+    <ClInclude Include="progress.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="concurrent_progress.cpp" />
+    <ClCompile Include="console.cpp" />
+    <ClCompile Include="dataset.cpp" />
+    <ClCompile Include="file_util.cpp" />
+    <ClCompile Include="graph.cpp" />
+    <ClCompile Include="heap_set.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="node.cpp" />
+    <ClCompile Include="progress.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="nodes_250_0-184.bin" />
+    <None Include="queries_25_0-184.bin" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
@@ -86,8 +112,9 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -100,8 +127,9 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;_USE_MATH_DEFINES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,26 +168,6 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="concurrent_progress.cpp" />
-    <ClCompile Include="console.cpp" />
-    <ClCompile Include="dataset.cpp" />
-    <ClCompile Include="graph.cpp" />
-    <ClCompile Include="heap_set.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="node.cpp" />
-    <ClCompile Include="progress.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="concurrent_progress.h" />
-    <ClInclude Include="console.h" />
-    <ClInclude Include="dataset.h" />
-    <ClInclude Include="graph.h" />
-    <ClInclude Include="heap_set.h" />
-    <ClInclude Include="imports.h" />
-    <ClInclude Include="node.h" />
-    <ClInclude Include="progress.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

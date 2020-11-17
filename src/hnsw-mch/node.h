@@ -5,9 +5,11 @@ namespace mch
 {
 	class Node
 	{
-		vector<vector<Node*>> layers;
-
 	public:
+		static size_t NEXT_ID;
+
+		size_t id;
+		vector<vector<Node*>> layers;
 		float* coords;
 
 		Node(float* coords);
@@ -18,6 +20,8 @@ namespace mch
 		size_t level();
 		vector<Node*>* neighborhood(size_t layer_idx);
 		void set_neighborhood(vector<Node*>&& neighbors, size_t layer_idx);
+
+		string to_string();
 	};
 
 	float compute_distance_between(float* coords, float* query, size_t& dimensions);

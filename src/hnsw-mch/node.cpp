@@ -2,7 +2,9 @@
 
 namespace mch
 {
-	Node::Node(float* coords): coords(coords)
+	size_t Node::NEXT_ID = 0;
+
+	Node::Node(float* coords): id(NEXT_ID++), coords(coords)
 	{}
 	void Node::init(size_t level)
 	{
@@ -34,6 +36,28 @@ namespace mch
 	void Node::set_neighborhood(vector<Node*>&& neighbors, size_t layer_idx)
 	{
 		this->layers[layer_idx] = move(neighbors);
+	}
+	string Node::to_string()
+	{
+		if(!this->layers.size())
+			return "";
+
+		auto result = std::to_string(this->id) + '\n';
+
+		for(auto& layer : this->layers)
+		{
+			result += '\t';
+
+			for(auto& item : layer)
+			{
+				result += std::to_string(item->id);
+				result += ' ';
+			}
+
+			result += '\n';
+		}
+
+		return result;
 	}
 	float compute_distance_between(float* coords, float* query, size_t& dimensions)
 	{
