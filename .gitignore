@@ -1,5 +1,7 @@
 /.vs/
+/.vscode/
 /src/.vs/
 /src/**/Debug
 /src/**/VTune*
 /src/**/x64
+*.bin

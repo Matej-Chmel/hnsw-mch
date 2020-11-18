@@ -1,0 +1,33 @@
+dataset_x64_128_10000_1000_0_184.bin
+
+====================
+Dataset parameters
+====================
+
+Dimensions			128
+Node count			10000
+Query count			1000
+K to return			10
+Min value			0
+Max value			184
+
+powf() used			No
+sqrtf() used			No
+
+===================
+Graph parameters
+===================
+
+ef				100
+m				20
+mmax				40
+ml				0.330
+
+Heuristic used			No
+Candidates extended		No
+Pruned kept			No
+
+Build time			5.280
+Bruteforce search time		1.738
+Approximate search time		0.697
+Median accuracy			90.000 %

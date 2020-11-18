@@ -3,52 +3,40 @@
 
 namespace mch
 {
-	struct GraphParams
+	class Graph
 	{
+	public:
 		size_t ef;
 		size_t m;
-		float ml;
 		size_t mmax;
+		float ml;
 		bool use_heuristic;
 		bool extend_candidates;
 		bool keep_pruned;
-
-		GraphParams(size_t ef, size_t m, float ml, size_t mmax, bool use_heuristic, bool extend_candidates, bool keep_pruned);
-	};
-
-	struct BuildMeasurement
-	{
-		long long build_ms;
-		long long approx_ms;
-		float median_accuracy;
-	};
-
-	class Graph
-	{
-		Dataset* data;
+		GraphMeasurement measurement;
+		Dataset* dataset;
+		Set* nodes;
 		Node* entry;
-		size_t entry_level;
-		vector<Node> nodes;
-		vector<Node*>(Graph::*select_neighbors)(Node* query, HeapSet<nearest>&& candidates, size_t m_to_return, size_t layer_idx);
 
-		void set_entry(Node* query);
+		Graph(Dataset* dataset, size_t ef, size_t m, size_t mmax, float ml, bool use_heuristic, bool extend_candidates, bool keep_pruned);
+		Graph(const Graph& other);
+		~Graph();
+
 		size_t generate_level();
 		void insert(Node* query);
-		HeapItem search_one(float* query, HeapItem entry, size_t layer_idx);
-		void search_layer(float* query, HeapSet<furthest>& found, size_t layer_idx);
-		vector<Node*> select_neighbors_simple(Node* query, HeapSet<nearest>&& candidates, size_t m_to_return, size_t layer_idx);
-		vector<Node*> select_neighbors_heuristic(Node* query, HeapSet<nearest>&& candidates, size_t m_to_return, size_t layer_idx);
-		vector<float*> approx_search(float* query);
-		void update_params();
+		void search_layer(Node* query, Set* out_entries, size_t ef, size_t layer_idx);
+		Set* select_neighbors(Node* query, Set* candidates, size_t m, size_t layer_idx);
+		Set* approx_search(Node* query);
 
-	public:
-		GraphParams params;
-
-		Graph(Dataset* data, GraphParams params);
-
-		BuildMeasurement build();
+		void build();
+		void search_all();
 
 		string to_string();
 		void print();
+
+		string create_description();
+		string create_measurement_description();
+		void print_measurement_description();
+		void save_measurement_description();
 	};
 }

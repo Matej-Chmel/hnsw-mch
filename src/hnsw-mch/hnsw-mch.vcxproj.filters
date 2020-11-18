@@ -5,10 +5,6 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
-    <Filter Include="Datasets">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
-    </Filter>
     <Filter Include="Sources">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
@@ -18,11 +14,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="concurrent_progress.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
-    <ClInclude Include="console.h">
-      <Filter>Headers</Filter>
+    <ClInclude Include="imports.h">
+      <Filter>Entry</Filter>
     </ClInclude>
     <ClInclude Include="dataset.h">
       <Filter>Headers</Filter>
@@ -33,28 +26,25 @@
     <ClInclude Include="graph.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="heap_set.h">
-      <Filter>Headers</Filter>
-    </ClInclude>
     <ClInclude Include="node.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="progress.h">
+    <ClInclude Include="perf.h">
       <Filter>Headers</Filter>
     </ClInclude>
-    <ClInclude Include="imports.h">
-      <Filter>Entry</Filter>
+    <ClInclude Include="progress_bar.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="set.h">
+      <Filter>Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="util.h">
+      <Filter>Headers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
       <Filter>Entry</Filter>
-    </ClCompile>
-    <ClCompile Include="concurrent_progress.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
-    <ClCompile Include="console.cpp">
-      <Filter>Sources</Filter>
     </ClCompile>
     <ClCompile Include="dataset.cpp">
       <Filter>Sources</Filter>
@@ -65,22 +55,20 @@
     <ClCompile Include="graph.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="heap_set.cpp">
-      <Filter>Sources</Filter>
-    </ClCompile>
     <ClCompile Include="node.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-    <ClCompile Include="progress.cpp">
+    <ClCompile Include="perf.cpp">
       <Filter>Sources</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="nodes_250_0-184.bin">
-      <Filter>Datasets</Filter>
-    </None>
-    <None Include="queries_25_0-184.bin">
-      <Filter>Datasets</Filter>
-    </None>
+    <ClCompile Include="progress_bar.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="set.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
+    <ClCompile Include="util.cpp">
+      <Filter>Sources</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

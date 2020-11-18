@@ -19,30 +19,26 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="concurrent_progress.h" />
-    <ClInclude Include="console.h" />
     <ClInclude Include="dataset.h" />
     <ClInclude Include="file_util.h" />
     <ClInclude Include="graph.h" />
-    <ClInclude Include="heap_set.h" />
     <ClInclude Include="imports.h" />
     <ClInclude Include="node.h" />
-    <ClInclude Include="progress.h" />
+    <ClInclude Include="perf.h" />
+    <ClInclude Include="progress_bar.h" />
+    <ClInclude Include="set.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="concurrent_progress.cpp" />
-    <ClCompile Include="console.cpp" />
     <ClCompile Include="dataset.cpp" />
     <ClCompile Include="file_util.cpp" />
     <ClCompile Include="graph.cpp" />
-    <ClCompile Include="heap_set.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="node.cpp" />
-    <ClCompile Include="progress.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="nodes_250_0-184.bin" />
-    <None Include="queries_25_0-184.bin" />
+    <ClCompile Include="perf.cpp" />
+    <ClCompile Include="progress_bar.cpp" />
+    <ClCompile Include="set.cpp" />
+    <ClCompile Include="util.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

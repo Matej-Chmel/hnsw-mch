@@ -4,38 +4,63 @@ namespace mch
 {
 	size_t Node::NEXT_ID = 0;
 
-	Node::Node(float* coords): id(NEXT_ID++), coords(coords)
+	Node::Node(size_t dimensions, float* coords) : id(NEXT_ID++), dimensions(dimensions), level(0), coords(coords), distance(0), query(nullptr)
 	{}
+	Node::~Node()
+	{
+		for(auto& item : this->layers)
+			delete item;
+	}
 	void Node::init(size_t level)
 	{
-		this->layers.clear();
-		this->layers.resize(level + 1);
+		size_t length = level + 1;
+		this->level = level;
+
+		this->layers.reserve(length);
+		for(size_t i = 0; i < length; i++)
+			this->layers.push_back(new vector<Node*>);
 	}
-	float Node::compute_distance_to(float* query, size_t& dimensions)
+	void Node::compute_distance_to(Node* other, bool use_pow, bool use_sqrt)
 	{
-		return compute_distance_between(this->coords, query, dimensions);
+		if(this->query == other)
+			return;
+
+		float result = 0.0f;
+		this->query = other;
+
+		if(use_pow)
+			for(size_t i = 0; i < this->dimensions; i++)
+				result += powf(this->coords[i] - other->coords[i], 2);
+		else
+			for(size_t i = 0; i < this->dimensions; i++)
+			{
+				float difference = this->coords[i] - other->coords[i];
+				result += difference * difference;
+			}
+
+		if(use_sqrt)
+			this->distance = sqrtf(result);
+		else
+			this->distance = result;
 	}
-	void Node::connect(vector<Node*>& items, size_t layer_idx)
+	void Node::connect(vector<Node*>* nodes, size_t idx)
 	{
-		auto layer = this->neighborhood(layer_idx);
-		layer->reserve(layer->size() + items.size());
-		for(auto item : items)
+		vector<Node*>* layer = this->neighborhood(idx);
+
+		for(auto& item : *nodes)
 		{
 			layer->push_back(item);
-			item->neighborhood(layer_idx)->push_back(this);
+			item->neighborhood(idx)->push_back(this);
 		}
 	}
-	size_t Node::level()
+	vector<Node*>* Node::neighborhood(size_t idx)
 	{
-		return this->layers.size() - 1;
+		return this->layers[idx];
 	}
-	vector<Node*>* Node::neighborhood(size_t layer_idx)
+	void Node::set_neighborhood(vector<Node*>* layer, size_t idx)
 	{
-		return &this->layers[layer_idx];
-	}
-	void Node::set_neighborhood(vector<Node*>&& neighbors, size_t layer_idx)
-	{
-		this->layers[layer_idx] = move(neighbors);
+		delete this->neighborhood(idx);
+		this->layers[idx] = layer;
 	}
 	string Node::to_string()
 	{
@@ -48,7 +73,7 @@ namespace mch
 		{
 			result += '\t';
 
-			for(auto& item : layer)
+			for(auto& item : *layer)
 			{
 				result += std::to_string(item->id);
 				result += ' ';
@@ -58,12 +83,5 @@ namespace mch
 		}
 
 		return result;
-	}
-	float compute_distance_between(float* coords, float* query, size_t& dimensions)
-	{
-		float result = 0;
-		for(size_t i = 0; i < dimensions; i++)
-			result += powf(coords[i] - query[i], 2);
-		return sqrtf(result);
 	}
 }

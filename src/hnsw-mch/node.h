@@ -9,20 +9,22 @@ namespace mch
 		static size_t NEXT_ID;
 
 		size_t id;
-		vector<vector<Node*>> layers;
+		size_t dimensions;
+		size_t level;
 		float* coords;
+		float distance;
+		Node* query;
+		vector<vector<Node*>*> layers;
 
-		Node(float* coords);
+		Node(size_t dimensions, float* coords);
+		~Node();
+
 		void init(size_t level);
-
-		float compute_distance_to(float* query, size_t& dimensions);
-		void connect(vector<Node*>& items, size_t layer_idx);
-		size_t level();
-		vector<Node*>* neighborhood(size_t layer_idx);
-		void set_neighborhood(vector<Node*>&& neighbors, size_t layer_idx);
+		void compute_distance_to(Node* other, bool use_pow, bool use_sqrt);
+		void connect(vector<Node*>* nodes, size_t idx);
+		vector<Node*>* neighborhood(size_t idx);
+		void set_neighborhood(vector<Node*>* layer, size_t idx);
 
 		string to_string();
 	};
-
-	float compute_distance_between(float* coords, float* query, size_t& dimensions);
 }

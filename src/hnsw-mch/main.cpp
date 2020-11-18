@@ -1,45 +1,32 @@
-#include "console.h"
 #include "graph.h"
 #include "file_util.h"
 using namespace mch;
 using namespace std;
 
-constexpr bool SAVING_DATASET = false;
+constexpr size_t NODE_COUNT_START = 1000;
+constexpr size_t NODE_COUNT_STEP = 1000;
+constexpr size_t NODE_COUNT_END = 10000;
+
+static void build_and_search(size_t node_count, bool use_pow, bool use_sqrt)
+{
+	Dataset dataset(128, node_count, node_count / 10, 10, 0, 184, use_pow, use_sqrt);
+	Graph graph(&dataset, 100, 20, 40, 0.33f, false, false, false);
+
+	graph.build();
+	graph.search_all();
+	graph.save_measurement_description();
+}
 
 int main()
 {
-	GenMeasurement gen;
-
-	if constexpr(SAVING_DATASET)
+	for(size_t node_count = NODE_COUNT_START; node_count <= NODE_COUNT_END; node_count += NODE_COUNT_STEP)
 	{
-		Dataset dataset(gen, 128, 250, 25, 10, 0, 184);
-		dataset.save();
+		build_and_search(node_count, false, false);
+		build_and_search(node_count, true, true);
 	}
-	else
-	{
-		Dataset dataset(gen, "nodes_250_0-184.bin", "queries_25_0-184.bin", 128, 10);
+	
+	fputs("Press any key to continue.", stdout);
+	(void) getchar();
 
-		GraphParams params(100, 20, 0.33f, 40, false, false, false);
-		Graph graph(&dataset, params);
-
-		auto build = graph.build();
-
-		printf
-		(
-			"Nodes generated in" TIME_FORMAT
-			"Queries generated in" TIME_FORMAT
-			"Bruteforce search finished in" TIME_FORMAT
-			"Graph build in" TIME_FORMAT
-			"Approximate search finished in" TIME_FORMAT
-			"Median accuracy is %.3f %%\n\n",
-			TIME(gen.node_ms),
-			TIME(gen.query_ms),
-			TIME(gen.bruteforce_ms),
-			TIME(build.build_ms),
-			TIME(build.approx_ms),
-			build.median_accuracy
-		);
-	}
-
-	return completed();
+	return 0;
 }
