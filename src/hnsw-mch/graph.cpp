@@ -138,12 +138,12 @@ namespace mch
 					item->compute_distance_to(query, this->dataset->use_pow, this->dataset->use_sqrt);
 					furthest_found = out_entries->front();
 
-					if(item->distance < furthest_found->distance || out_entries->size() < this->ef)
+					if(item->distance < furthest_found->distance || out_entries->size() < ef)
 					{
 						candidates.insert(item);
 						out_entries->insert(item);
 
-						if(out_entries->size() > this->ef)
+						if(out_entries->size() > ef)
 							out_entries->remove_front();
 					}
 				}

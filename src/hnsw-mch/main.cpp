@@ -4,12 +4,12 @@
 using namespace mch;
 using namespace std;
 
-constexpr size_t NODE_COUNT_START = 30000;
-constexpr size_t NODE_COUNT_STEP = 1000;
+constexpr size_t NODE_COUNT_START = 5000;
+constexpr size_t NODE_COUNT_STEP = 5000;
 constexpr size_t NODE_COUNT_END = 30000;
-constexpr size_t APPROX_EF_START = 10;
-constexpr size_t APPROX_EF_STEP = 10;
-constexpr size_t APPROX_EF_END = 200;
+constexpr size_t APPROX_EF_START = 25;
+constexpr size_t APPROX_EF_STEP = 25;
+constexpr size_t APPROX_EF_END = 1000;
 
 static void build_and_search(size_t node_count, bool use_pow, bool use_sqrt)
 {
