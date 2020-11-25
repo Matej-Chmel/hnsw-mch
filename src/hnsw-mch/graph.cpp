@@ -199,8 +199,7 @@ namespace mch
 			return result;
 		}
 	}
-	// TODO add parameter ef
-	Set* Graph::approx_search(Node* query)
+	Set* Graph::approx_search(Node* query, size_t ef)
 	{
 		Node* point = this->entry;
 
@@ -209,7 +208,7 @@ namespace mch
 
 		Set* found = new Set(query, this->entry, this->dataset->use_pow, this->dataset->use_sqrt, set_order::furthest);
 
-		this->search_layer(query, found, this->ef, 0);
+		this->search_layer(query, found, ef, 0);
 		found->keep_only_k_nearest(this->dataset->k);
 
 		return found;
@@ -242,20 +241,21 @@ namespace mch
 		}
 		perf_stop(this->measurement.build_ms);
 	}
-	void Graph::search_all()
+	void Graph::search_all(size_t ef)
 	{
 		vector<Set*> results;
+		ll time_ms;
 
 		perf_start();
 		{
 			results.reserve(this->dataset->query_count);
 
 			for(auto& query : this->dataset->all_queries)
-				results.push_back(this->approx_search(query));
+				results.push_back(this->approx_search(query, ef));
 		}
-		perf_stop(this->measurement.approx_ms);
+		perf_stop(time_ms);
 
-		this->measurement.median_accuracy = this->dataset->compare_to_bruteforce(&results);
+		this->measurement.results.emplace_back(ef, time_ms, this->dataset->compare_to_bruteforce(&results));
 
 		for(auto& item : results)
 			delete item;
@@ -314,17 +314,35 @@ namespace mch
 		(
 			buffer, MEASUREMENT_DESCRIPTION_MAX_LENGTH,
 			"\n"
-			"Build time\t\t\t" TIME_FORMAT
-			"Bruteforce search time\t\t" TIME_FORMAT
-			"Approximate search time\t\t" TIME_FORMAT
-			"Median accuracy\t\t\t%.3f %%\n",
+			"Build time\t\t\t" TIME_FORMATN
+			"Bruteforce search time\t\t" TIME_FORMATN
+			"\n"
+			"=====================\n"
+			"Approximate searches\n"
+			"=====================\n"
+			"\n"
+			"ef\t\t\tef : k ratio\t\ttime\t\t\tmedian accuracy\n",
 			TIME_VALUE(this->measurement.build_ms),
-			TIME_VALUE(this->dataset->measurement.bruteforce_ms),
-			TIME_VALUE(this->measurement.approx_ms),
-			this->measurement.median_accuracy
+			TIME_VALUE(this->dataset->measurement.bruteforce_ms)
 		);
 
 		string description(buffer);
+
+		for(auto& result : this->measurement.results)
+		{
+			snprintf
+			(
+				buffer, MEASUREMENT_DESCRIPTION_MAX_LENGTH,
+				"%zd\t\t\t%.3f\t\t\t" TIME_FORMAT "\t\t\t%.3f\n",
+				result.ef,
+				float(result.ef) / float(this->dataset->k),
+				TIME_VALUE(result.time_ms),
+				result.median_accuracy
+			);
+
+			description += string(buffer);
+		}
+
 		delete[] buffer;
 
 		return this->dataset->create_description() + '\n' + this->create_description() + description;

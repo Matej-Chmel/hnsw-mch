@@ -27,10 +27,10 @@ namespace mch
 		void search_layer_one(Node* query, Node* out_entry, size_t layer_idx);
 		void search_layer(Node* query, Set* out_entries, size_t ef, size_t layer_idx);
 		Set* select_neighbors(Node* query, Set* candidates, size_t m, size_t layer_idx);
-		Set* approx_search(Node* query);
+		Set* approx_search(Node* query, size_t ef);
 
 		void build();
-		void search_all();
+		void search_all(size_t ef);
 
 		string to_string();
 		void print();
