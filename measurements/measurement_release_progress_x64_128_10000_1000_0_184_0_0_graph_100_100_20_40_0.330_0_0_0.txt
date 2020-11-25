@@ -1,13 +1,13 @@
-dataset_x64_128_2000_200_0_184.bin
+dataset_x64_128_10000_1000_0_184.bin
 
 ====================
 Dataset parameters
 ====================
 
 Dimensions			128
-Node count			2000
-Query count			200
-K to return			10
+Node count			10000
+Query count			1000
+K to return			100
 Min value			0
 Max value			184
 
@@ -27,7 +27,7 @@ Heuristic used			No
 Candidates extended		No
 Pruned kept			No
 
-Build time			0.545
-Bruteforce search time		0.064
-Approximate search time		0.075
-Median accuracy			100.000 %
+Build time			4.592
+Bruteforce search time		1.808
+Approximate search time		0.570
+Median accuracy			75.000 %

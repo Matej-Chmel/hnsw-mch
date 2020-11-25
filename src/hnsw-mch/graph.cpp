@@ -31,14 +31,13 @@ namespace mch
 	}
 	void Graph::insert(Node* query)
 	{
-		Set* found = new Set(query, this->entry, this->dataset->use_pow, this->dataset->use_sqrt, set_order::furthest);
+		Node* point = this->entry;
 		query->init(this->generate_level());
 
 		for(size_t i = this->entry->level; i >= query->level + 1; i--)
-		{
-			this->search_layer(query, found, 1, i);
-			found->keep_only_the_nearest();
-		}
+			this->search_layer_one(query, point, i);
+
+		Set* found = new Set(query, point, this->dataset->use_pow, this->dataset->use_sqrt, set_order::furthest);
 
 		for(size_t i = min(this->entry->level, query->level);; i--)
 		{
@@ -69,20 +68,65 @@ namespace mch
 
 		delete found;
 	}
+	void Graph::search_layer_one(Node* query, Node* out_entry, size_t layer_idx)
+	{
+		Set candidates(query, this->dataset->use_pow, this->dataset->use_sqrt, set_order::nearest);
+		unordered_set<Node*> visited;
+
+		visited.insert(out_entry);
+
+		{
+			auto neighbors = out_entry->neighborhood(layer_idx);
+			for(auto item : *neighbors)
+			{
+				visited.insert(item);
+				item->compute_distance_to(query, this->dataset->use_pow, this->dataset->use_sqrt);
+
+				if(item->distance < out_entry->distance)
+				{
+					candidates.insert(item);
+					out_entry = item;
+				}
+			}
+		}
+
+		while(candidates.size() > 0)
+		{
+			auto nearest_candidate = candidates.pop_front();
+
+			if(nearest_candidate->distance > out_entry->distance)
+				break;
+
+			auto neighbors = nearest_candidate->neighborhood(layer_idx);
+			for(auto item : *neighbors)
+			{
+				if(visited.insert(item).second)
+				{
+					item->compute_distance_to(query, this->dataset->use_pow, this->dataset->use_sqrt);
+
+					if(item->distance < out_entry->distance)
+					{
+						candidates.insert(item);
+						out_entry = item;
+					}
+				}
+			}
+		}
+	}
 	void Graph::search_layer(Node* query, Set* out_entries, size_t ef, size_t layer_idx)
 	{
+		Set candidates(*out_entries, set_order::nearest);
 		unordered_set<Node*> visited;
-		Set* candidates = new Set(*out_entries, set_order::nearest);
-		out_entries->ensure_order(set_order::furthest);
 
+		out_entries->ensure_order(set_order::furthest);
 		visited.reserve(out_entries->size());
 
 		for(auto* item : *out_entries)
 			visited.insert(item);
 
-		while(candidates->size() > 0)
+		while(candidates.size() > 0)
 		{
-			auto nearest_candidate = candidates->pop_front();
+			auto nearest_candidate = candidates.pop_front();
 			auto furthest_found = out_entries->front();
 
 			if(nearest_candidate->distance > furthest_found->distance)
@@ -96,7 +140,7 @@ namespace mch
 
 					if(item->distance < furthest_found->distance || out_entries->size() < this->ef)
 					{
-						candidates->insert(item);
+						candidates.insert(item);
 						out_entries->insert(item);
 
 						if(out_entries->size() > this->ef)
@@ -104,8 +148,6 @@ namespace mch
 					}
 				}
 		}
-
-		delete candidates;
 	}
 	Set* Graph::select_neighbors(Node* query, Set* candidates, size_t m, size_t layer_idx)
 	{
@@ -157,15 +199,15 @@ namespace mch
 			return result;
 		}
 	}
+	// TODO add parameter ef
 	Set* Graph::approx_search(Node* query)
 	{
-		Set* found = new Set(query, this->entry, this->dataset->use_pow, this->dataset->use_sqrt, set_order::furthest);
+		Node* point = this->entry;
 
 		for(size_t i = this->entry->level; i >= 1; i--)
-		{
-			this->search_layer(query, found, 1, i);
-			found->keep_only_the_nearest();
-		}
+			this->search_layer_one(query, point, i);
+
+		Set* found = new Set(query, this->entry, this->dataset->use_pow, this->dataset->use_sqrt, set_order::furthest);
 
 		this->search_layer(query, found, this->ef, 0);
 		found->keep_only_k_nearest(this->dataset->k);

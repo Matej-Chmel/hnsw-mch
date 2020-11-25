@@ -1,18 +1,18 @@
-dataset_x64_128_1000_100_0_184.bin
+dataset_x64_128_10000_1000_0_184.bin
 
 ====================
 Dataset parameters
 ====================
 
 Dimensions			128
-Node count			1000
-Query count			100
-K to return			10
+Node count			10000
+Query count			1000
+K to return			100
 Min value			0
 Max value			184
 
-powf() used			Yes
-sqrtf() used			Yes
+powf() used			No
+sqrtf() used			No
 
 ===================
 Graph parameters
@@ -27,7 +27,7 @@ Heuristic used			No
 Candidates extended		No
 Pruned kept			No
 
-Build time			0.932
-Bruteforce search time		0.177
-Approximate search time		0.154
-Median accuracy			100.000 %
+Build time			4.662
+Bruteforce search time		1.774
+Approximate search time		0.578
+Median accuracy			75.000 %

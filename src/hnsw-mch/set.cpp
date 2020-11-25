@@ -22,7 +22,7 @@ namespace mch
 	{
 		this->nodes = new vector<Node*>;
 	}
-	Set::Set(Node* query, Node* node, bool use_pow, bool use_sqrt, set_order order) : query(query), owns_nodes(true), order(order)
+	Set::Set(Node* query, Node* node, bool use_pow, bool use_sqrt, set_order order) : query(query), owns_nodes(true), order(order), use_pow(use_pow), use_sqrt(use_sqrt)
 	{
 		this->nodes = new vector<Node*>;
 		node->compute_distance_to(query, this->use_pow, this->use_sqrt);
@@ -114,11 +114,6 @@ namespace mch
 	size_t Set::size()
 	{
 		return this->nodes->size();
-	}
-	void Set::keep_only_the_nearest()
-	{
-		make_heap(this->nodes->begin(), this->nodes->end(), nearest_cmp);
-		this->nodes->erase(this->nodes->begin() + 1, this->nodes->end());
 	}
 	void Set::keep_only_k_nearest(size_t k)
 	{

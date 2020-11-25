@@ -24,6 +24,7 @@ namespace mch
 
 		size_t generate_level();
 		void insert(Node* query);
+		void search_layer_one(Node* query, Node* out_entry, size_t layer_idx);
 		void search_layer(Node* query, Set* out_entries, size_t ef, size_t layer_idx);
 		Set* select_neighbors(Node* query, Set* candidates, size_t m, size_t layer_idx);
 		Set* approx_search(Node* query);

@@ -54,7 +54,6 @@ namespace mch
 		Node* pop_front();
 		void remove_front();
 		size_t size();
-		void keep_only_the_nearest();
 		void keep_only_k_nearest(size_t k);
 
 		Node* const& operator[](const size_t idx);
