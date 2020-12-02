@@ -39,4 +39,23 @@ namespace mch
 
 		return result;
 	}
+	void pause(const char* message)
+	{
+		printf("%s\nPress any key to continue.\n", message);
+		(void) getchar();
+	}
+	void crash(const char* message)
+	{
+		pause(message);
+		exit(EXIT_FAILURE);
+	}
+	void crashf(const char* format, ...)
+	{
+		va_list args;
+		va_start(args, format);
+		vprintf(format, args);
+		fputs("Press any key to exit.", stdout);
+		va_end(args);
+		(void) getchar();
+	}
 }

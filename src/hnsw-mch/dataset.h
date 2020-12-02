@@ -7,8 +7,9 @@ namespace mch
 	class Dataset
 	{
 		void bruteforce_all();
-		void save(string filename, float* data, size_t length);
 		string create_filename(const char* category);
+		void create_queries();
+		void save(string filename, float* data, size_t length);
 
 	public:
 		DatasetMeasurement measurement;
@@ -26,6 +27,7 @@ namespace mch
 		vector<Node*> all_nodes;
 		vector<unordered_set<float*>> bruteforce_results;
 
+		Dataset(string nodes_name, string queries_name, string results_name, size_t dimensions, size_t k, bool use_pow, bool use_sqrt);
 		Dataset(size_t dimensions, size_t node_count, size_t query_count, size_t k, float min_value, float max_value, bool use_pow, bool use_sqrt);
 		~Dataset();
 

@@ -1,20 +1,21 @@
 #include "graph.h"
 #include "file_util.h"
 #include "progress_bar.h"
+#include "util.h"
 using namespace mch;
 using namespace std;
 
-constexpr size_t NODE_COUNT_START = 5000;
-constexpr size_t NODE_COUNT_STEP = 5000;
-constexpr size_t NODE_COUNT_END = 30000;
+//constexpr size_t NODE_COUNT_START = 5000;
+//constexpr size_t NODE_COUNT_STEP = 5000;
+//constexpr size_t NODE_COUNT_END = 30000;
 constexpr size_t APPROX_EF_START = 25;
 constexpr size_t APPROX_EF_STEP = 25;
 constexpr size_t APPROX_EF_END = 1000;
 
-static void build_and_search(size_t node_count, bool use_pow, bool use_sqrt)
+static void build_and_search(Dataset* dataset)
 {
-	Dataset dataset(128, node_count, node_count / 10, node_count / 100, 0, 184, use_pow, use_sqrt);
-	Graph graph(&dataset, 100, 20, 40, 0.33f, false, false, false);
+	//Dataset dataset(128, node_count, node_count / 10, node_count / 100, 0, 184, use_pow, use_sqrt);
+	Graph graph(dataset, 100, 20, 40, 0.33f, false, false, false);
 	
 	graph.build();
 	
@@ -37,14 +38,9 @@ static void build_and_search(size_t node_count, bool use_pow, bool use_sqrt)
 
 int main()
 {
-	for(size_t node_count = NODE_COUNT_START; node_count <= NODE_COUNT_END; node_count += NODE_COUNT_STEP)
-	{
-		build_and_search(node_count, false, false);
-		//build_and_search(node_count, true, true);
-	}
+	Dataset dataset("sift1M.bin", "siftQ1M.bin", "knnQA1M.bin", 128, 100, false, false);
+	build_and_search(&dataset);
 	
-	fputs("Press any key to continue.", stdout);
-	(void) getchar();
-
+	pause("Completed");
 	return 0;
 }

@@ -11,11 +11,8 @@ namespace mch
 
 	void Dataset::bruteforce_all()
 	{
-		this->all_queries.reserve(this->query_count);
+		this->create_queries();
 		this->bruteforce_results.resize(this->query_count);
-
-		for(size_t i = 0; i < this->query_count; i++)
-			this->all_queries.push_back(new Node(this->dimensions, this->query_coords + i * this->dimensions));
 
 		perf_start();
 		{
@@ -51,6 +48,61 @@ namespace mch
 	string Dataset::create_filename(const char* category)
 	{
 		return this->create_filename(category, strcmp(category, CATEGORY_NODES) == 0 ? &this->node_count : &this->query_count, ".bin");
+	}
+	void Dataset::create_queries()
+	{
+		this->all_queries.reserve(this->query_count);
+		for(size_t i = 0; i < this->query_count; i++)
+			this->all_queries.push_back(new Node(this->dimensions, this->query_coords + i * this->dimensions));
+	}
+	Dataset::Dataset(string nodes_name, string queries_name, string results_name, size_t dimensions, size_t k, bool use_pow, bool use_sqrt):
+		dimensions(dimensions), k(k), min_value(-1), max_value(-1), use_pow(use_pow), use_sqrt(use_sqrt)
+	{
+		perf_start();
+		{
+			this->node_coords = load_file_data<float>(path_dataset(nodes_name), this->node_count);
+			this->node_count /= this->dimensions;
+
+			if(!this->node_coords)
+				crashf("File %s not found.", nodes_name.c_str());
+		}
+		perf_stop(this->measurement.node_ms);
+
+		perf_start();
+		{
+			this->query_coords = load_file_data<float>(path_dataset(queries_name), this->query_count);
+			this->query_count /= this->dimensions;
+
+			if(!this->query_coords)
+				crashf("File %s not found.", queries_name.c_str());
+		}
+		perf_stop(this->measurement.query_ms);
+
+		perf_start();
+		{
+			size_t sift_length;
+			int* sift_positions = load_file_data<int>(path_dataset(results_name), sift_length);
+
+			this->create_queries();
+			this->bruteforce_results.resize(this->query_count);
+
+			for(size_t i = 0; i < this->query_count; i++)
+			{
+				auto result = &this->bruteforce_results[i];
+
+				size_t end_index = (i + 1) * this->k;
+
+				for(size_t j = i * this->k; j < end_index; j++)
+				{
+					//size_t index = sift_positions[j] * this->dimensions;
+					size_t index = sift_positions[j];
+					result->insert(this->node_coords + index);
+				}
+			}
+
+			delete[] sift_positions;
+		}
+		perf_stop(this->measurement.bruteforce_ms);
 	}
 	Dataset::Dataset(size_t dimensions, size_t node_count, size_t query_count, size_t k, float min_value, float max_value, bool use_pow, bool use_sqrt):
 		dimensions(dimensions), node_count(node_count), query_count(query_count), k(k), min_value(min_value), max_value(max_value), use_pow(use_pow), use_sqrt(use_sqrt)

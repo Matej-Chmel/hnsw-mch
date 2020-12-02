@@ -2,7 +2,9 @@
 #include <algorithm>
 #include <chrono>
 #include <cmath>
+#include <cstdarg>
 #include <cstdio>
+#include <cstring>
 #include <random>
 #include <string>
 #include <unordered_set>
