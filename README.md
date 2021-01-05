@@ -3,11 +3,10 @@ This is my implementation of the Hiearchical Navigable Small World (HNSW) data s
 
 Their implementation can be found at [github](https://github.com/nmslib/hnswlib).
 
-## Supported platforms
-- Windows 10
-
-## Workspace
-Supports Visual Studio 2019.
+## Requirements
+- C++17 compliant compiler
+- CMake 3.19
+- Python 3.9.1
 
 ## References
 Malkov, Yu A., and D. A. Yashunin. "Efficient and robust approximate nearest neighbor search using Hierarchical Navigable Small World graphs." Available at [arxiv](https://arxiv.org/abs/1603.09320).
