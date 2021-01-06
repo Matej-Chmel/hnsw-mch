@@ -4,7 +4,7 @@
 
 namespace mch
 {
-	Dataset::Dataset(const char* path, size_t dimensions):
+	Dataset::Dataset(size_t dimensions, const char* path):
 		dimensions(dimensions)
 	{
 		this->coords = load_file_data<float>(path, this->count);

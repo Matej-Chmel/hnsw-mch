@@ -32,7 +32,8 @@ namespace mch
 			buffers.push_back(current);
 		}
 
-		T* output = new T[buffers.size() * count + read];
+		out_length = buffers.size() * count + read;
+		T* output = new T[out_length];
 		T* ptr = output;
 
 		for(auto& buffer : buffers)

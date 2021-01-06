@@ -5,7 +5,7 @@ namespace mch
 {
 	Benchmark::Benchmark(Config* config): build_time(0), config(config)
 	{}
-	void Benchmark::run(Bruteforce& bruteforce, Dataset& nodes, Dataset& queries, vector<size_t> ef, size_t k)
+	void Benchmark::run(Bruteforce& bruteforce, Dataset& nodes, Dataset& queries, vector<size_t>& ef, size_t k)
 	{
 		Graph graph(this->config);
 		Timer timer;

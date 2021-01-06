@@ -13,7 +13,7 @@ file(GLOB NativeSource "${MODULE}/*.cpp")
 list(REMOVE_ITEM NativeSource ${BINDINGS})
 add_library(NativeLibrary ${NativeSource})
 
-pybind11_add_module (
+pybind11_add_module(
 	hnsw_mch
 	${BINDINGS}
 )

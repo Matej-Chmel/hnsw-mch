@@ -1,6 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-#include "benchmark.h"
+#include "benchmark_runner.h"
 using namespace mch;
 namespace py = pybind11;
 
@@ -21,15 +21,6 @@ PYBIND11_MODULE(hnsw_mch, package)
 		.def_readonly("mmax", &Config::mmax)
 		.def_readonly("use_heuristic", &Config::use_heuristic)
 		.def("__str__", &Config::to_string);
-
-	py::class_<Dataset>(package, "Dataset")
-		.def(py::init<size_t, size_t, float, float>(),
-			py::arg("dimensions"), py::arg("count"), py::arg("min_value"), py::arg("max_value")
-		);
-
-	py::class_<Bruteforce>(package, "Bruteforce")
-		.def(py::init<>())
-		.def("search", &Bruteforce::search, py::arg("nodes"), py::arg("queries"), py::arg("k"));
 	
 	py::class_<Benchmark>(package, "Benchmark")
 		.def(py::init<Config*>(), py::arg("config"))
@@ -38,4 +29,16 @@ PYBIND11_MODULE(hnsw_mch, package)
 		.def_readonly("recall", &Benchmark::recall)
 		.def_readonly("search_times", &Benchmark::search_times)
 		.def("run", &Benchmark::run, py::arg("bruteforce"), py::arg("nodes"), py::arg("queries"), py::arg("ef"), py::arg("k"));
+
+	py::class_<BenchmarkRunner>(package, "BenchmarkRunner")
+		.def(py::init<size_t, size_t, size_t, float, float, size_t>(),
+			py::arg("dimensions"), py::arg("node_count"), py::arg("query_count"), py::arg("min_value"), py::arg("max_value"), py::arg("k")
+		)
+		.def(py::init<size_t, const char*, const char*, const char*, size_t>(),
+			py::arg("dimensions"), py::arg("node_path"), py::arg("query_path"), py::arg("bruteforce_path"), py::arg("k")
+		)
+		.def_readonly("bruteforce_time", &BenchmarkRunner::bruteforce_time)
+		.def_readonly("benchmarks", &BenchmarkRunner::benchmarks)
+		.def("add", &BenchmarkRunner::add, py::arg("config"), py::arg("ef"))
+		.def("reserve", &BenchmarkRunner::reserve, py::arg("capacity"));
 }
