@@ -3,32 +3,67 @@
 
 namespace mch
 {
-	void Bruteforce::search(Dataset& nodes, Dataset& queries, size_t k)
+	void Bruteforce::knn_search(Dataset& queries, size_t query_idx, size_t k, vector<BruteforceItem*>& items)
+	{
+		auto result = &this->results[query_idx];
+		float* query = queries.get_coord(query_idx);
+
+		for(auto& item : items)
+			item->compute_distance_to(query, queries.dimensions);
+
+		sort(items.begin(), items.end(), sort_cmp);
+
+		for(size_t j = 0; j < k; j++)
+			result->insert(items[j]->coords);
+	}
+	void Bruteforce::search(Dataset& nodes, Dataset& queries, size_t k, ProgressUpdater* updater)
 	{
 		this->results.resize(queries.count);
 
 		vector<BruteforceItem*> items;
 		items.reserve(nodes.count);
 
-		for(size_t i = 0; i < nodes.count; i++)
-			items.push_back(new BruteforceItem(nodes.get_coord(i)));
-
-		for(size_t i = 0; i < queries.count; i++)
+		if(updater == nullptr)
 		{
-			auto result = &this->results[i];
-			float* query = queries.get_coord(i);
+			for(size_t i = 0; i < nodes.count; i++)
+				items.push_back(new BruteforceItem(nodes.get_coord(i)));
+
+			for(size_t i = 0; i < queries.count; i++)
+				this->knn_search(queries, i, k, items);
 
 			for(auto& item : items)
-				item->compute_distance_to(query, nodes.dimensions);
-
-			sort(items.begin(), items.end(), sort_cmp);
-
-			for(size_t j = 0; j < k; j++)
-				result->insert(items[j]->coords);
+				delete item;
 		}
+		else
+		{
+			updater->start("Creating bruteforce nodes", nodes.count);
 
-		for(auto& item : items)
-			delete item;
+			for(size_t i = 0; i < nodes.count; i++)
+			{
+				items.push_back(new BruteforceItem(nodes.get_coord(i)));
+				updater->update();
+			}
+
+			updater->close();
+			updater->start("Bruteforce processing queries", queries.count);
+
+			for(size_t i = 0; i < queries.count; i++)
+			{
+				this->knn_search(queries, i, k, items);
+				updater->update();
+			}
+
+			updater->close();
+			updater->start("Deleting bruteforce nodes", nodes.count);
+
+			for(auto& item : items)
+			{
+				delete item;
+				updater->update();
+			}
+
+			updater->close();
+		}
 	}
 	float Bruteforce::compare(vector<FurthestSet>& approx_results)
 	{
@@ -48,10 +83,11 @@ namespace mch
 
 		return correct / (query_count * k);
 	}
-	void Bruteforce::load(const char* path, float* nodes, size_t query_count, size_t k)
+	size_t Bruteforce::load(const char* path, float* nodes, size_t query_count)
 	{
-		size_t bruteforce_length;
-		int* bruteforce_positions = load_file_data<int>(path, bruteforce_length);
+		size_t length;
+		int* positions = load_file_data<int>(path, length);
+		size_t k = length / query_count;
 
 		this->results.resize(query_count);
 
@@ -61,9 +97,10 @@ namespace mch
 			size_t end_index = (i + 1) * k;
 
 			for(size_t j = i * k; j < end_index; j++)
-				result->insert(nodes + bruteforce_positions[j]);
+				result->insert(nodes + positions[j]);
 		}
 
-		delete[] bruteforce_positions;
+		delete[] positions;
+		return k;
 	}
 }

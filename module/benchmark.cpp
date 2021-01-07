@@ -5,13 +5,13 @@ namespace mch
 {
 	Benchmark::Benchmark(Config* config): build_time(0), config(config)
 	{}
-	void Benchmark::run(Bruteforce& bruteforce, Dataset& nodes, Dataset& queries, vector<size_t>& ef, size_t k)
+	void Benchmark::run(Bruteforce& bruteforce, Dataset& nodes, Dataset& queries, vector<size_t>& ef, size_t k, ProgressUpdater* updater)
 	{
 		Graph graph(this->config);
 		Timer timer;
 
 		timer.start();
-		graph.build(nodes);
+		graph.build(nodes, updater);
 		this->build_time = timer.stop();
 
 		this->recall.reserve(ef.size());
@@ -20,7 +20,7 @@ namespace mch
 		for(auto& _ef : ef)
 		{
 			timer.start();
-			auto results = graph.search_all(queries, _ef, k);
+			auto results = graph.search_all(queries, _ef, k, updater);
 			this->search_times.push_back(timer.stop());
 			this->recall.push_back(bruteforce.compare(results));
 		}

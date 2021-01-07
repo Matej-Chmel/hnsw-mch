@@ -6,4 +6,5 @@ cd %script_dir%
 
 rem Create solution
 cmake -G "Visual Studio 16 2019" -A x64 -S ..\ -B .
+echo Press any key to exit.
 pause >nul

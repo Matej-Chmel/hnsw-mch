@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdarg>
 #include <cstdio>
+#include <functional>
 #include <random>
 #include <string>
 #include <unordered_set>
@@ -13,6 +14,7 @@ namespace mch
 {
 	using namespace std;
 	using namespace chrono;
+	using namespace placeholders;
 
 	typedef long long ll;
 	typedef system_clock::time_point tp;

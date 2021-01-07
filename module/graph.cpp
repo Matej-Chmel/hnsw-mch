@@ -188,16 +188,6 @@ namespace mch
 				sort(out_candidates.begin(), out_candidates.end(), furthest_cmp);
 				out_candidates.resize(m);
 			}
-
-			/*
-				make_heap(out_candidates.begin(), out_candidates.end(), furthest_cmp);
-				sort_heap(out_candidates.begin(), out_candidates.end(), furthest_cmp);
-
-				if(out_candidates.size() < m)
-					m = out_candidates.size();
-
-				out_candidates.erase(out_candidates.begin() + m, out_candidates.end());
-			*/
 		}
 	}
 	void Graph::approx_search(float* query, size_t ef, size_t k, FurthestSet& output)
@@ -211,23 +201,54 @@ namespace mch
 		this->search_layer(query, output, ef, 0);
 		output.keep_only_k_nearest(k);
 	}
-	void Graph::build(Dataset& dataset)
+	void Graph::build(Dataset& dataset, ProgressUpdater* updater)
 	{
 		this->dimensions = dataset.dimensions;
 		this->nodes.reserve(dataset.count);
 		this->entry_level = this->generate_level();
 		this->entry = &this->nodes.emplace_back(dataset.get_coord(0), this->entry_level);
 
-		for(size_t i = 1; i < dataset.count; i++)
-			this->insert(dataset.get_coord(i));
+		if(updater == nullptr)
+		{
+			for(size_t i = 1; i < dataset.count; i++)
+				this->insert(dataset.get_coord(i));
+		}
+		else
+		{
+			updater->start("Inserting nodes", dataset.count);
+			updater->update();
+
+			for(size_t i = 1; i < dataset.count; i++)
+			{
+				this->insert(dataset.get_coord(i));
+				updater->update();
+			}
+
+			updater->close();
+		}
 	}
-	vector<FurthestSet> Graph::search_all(Dataset& dataset, size_t ef, size_t k)
+	vector<FurthestSet> Graph::search_all(Dataset& dataset, size_t ef, size_t k, ProgressUpdater* updater)
 	{
 		vector<FurthestSet> results;
 		results.resize(dataset.count);
 
-		for(size_t i = 0; i < dataset.count; i++)
-			this->approx_search(dataset.get_coord(i), ef, k, results[i]);
+		if(updater == nullptr)
+		{
+			for(size_t i = 0; i < dataset.count; i++)
+				this->approx_search(dataset.get_coord(i), ef, k, results[i]);
+		}
+		else
+		{
+			updater->start("Graph is processing queries", dataset.count);
+
+			for(size_t i = 0; i < dataset.count; i++)
+			{
+				this->approx_search(dataset.get_coord(i), ef, k, results[i]);
+				updater->update();
+			}
+
+			updater->close();
+		}
 
 		return results;
 	}

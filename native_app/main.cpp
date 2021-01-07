@@ -1,7 +1,29 @@
 #include "benchmark_runner.h"
+#include "progress_bar.h"
 #include "util.h"
 using namespace mch;
 
+//#define PROFILE
+//#define SIFT
+
+constexpr size_t dimensions = 128;
+constexpr size_t ef_construction = 100;
+constexpr size_t k = 100;
+constexpr size_t m = 20;
+constexpr size_t max_filename_length = 256;
+constexpr float max_value = 184;
+constexpr float min_value = 0;
+constexpr float ml = 0.33;
+constexpr size_t mmax = m * 2;
+constexpr size_t nodes = 100000;
+constexpr size_t queries = 1000;
+
+string get_dataset_path(string filename)
+{
+	char buffer[max_filename_length];
+	snprintf(buffer, max_filename_length, "..\\datasets\\%s.bin", filename.c_str());
+	return buffer;
+}
 void print_results(const char* title, BenchmarkRunner& runner, size_t idx, vector<size_t>& ef)
 {
 	auto& benchmark = runner.benchmarks[idx];
@@ -30,19 +52,32 @@ void print_results(const char* title, BenchmarkRunner& runner, size_t idx, vecto
 
 int main()
 {
-	Config config(100, false, false, 20, 0.33, 40, false);
-	Config config_heuristic(config);
-	vector<size_t> ef = { 100, 300, 1000 };
+	Config config(ef_construction, false, false, m, ml, mmax, false);
+	vector<size_t> ef = { 25, 50, 100, 300, 500, 1000 };
 
-	config_heuristic.use_heuristic = true;
+	#ifdef PROFILE
+		ProgressUpdater* updater = nullptr;
+	#else
+		ProgressUpdater* updater = new ProgressUpdater(ProgressBar::get_instance().bind());
+	#endif
 
-	BenchmarkRunner runner(128, 10000, 100, 0, 184, 10);
+	#ifdef SIFT
+		BenchmarkRunner runner
+		(
+			dimensions, get_dataset_path("sift1M").c_str(), get_dataset_path("siftQ1M").c_str(),
+			get_dataset_path("knnQA1M").c_str(), updater
+		);
+	#else
+		BenchmarkRunner runner(dimensions, nodes, queries, min_value, max_value, k, updater);
+	#endif
+
 	runner.add(&config, ef);
-	runner.add(&config_heuristic, ef);
-
 	print_results("Neighbors selected by simple sort", runner, 0, ef);
-	print_results("Neighbors selected by heuristic", runner, 1, ef);
+	
+	#ifndef PROFILE
+		delete updater;
+		pause_exit();
+	#endif
 
-	pause_exit();
 	return 0;
 }

@@ -1,14 +1,13 @@
 from itertools import product
-from local_release.hnsw_mch import BenchmarkRunner, Config
+from local_release.hnsw_mch import BenchmarkRunner, BoundProgressFunctions, Config, ProgressUpdater
 from matplotlib import pyplot as plt
 from os.path import abspath, dirname, join, pardir, realpath
 from pathlib import Path
 from tqdm import tqdm
 
-SIFT = False
-SCRIPT_PATH = dirname(realpath(__file__))
-BENCHMARKS_PATH = abspath(join(SCRIPT_PATH, pardir, 'benchmarks'))
-DATASET_PATH = join(SCRIPT_PATH, 'datasets')
+REPO_PATH = abspath(join(dirname(realpath(__file__)), pardir))
+BENCHMARKS_PATH = join(REPO_PATH, 'benchmarks')
+DATASET_PATH = join(REPO_PATH, 'datasets')
 Path(BENCHMARKS_PATH).mkdir(exist_ok=True)
 
 def get_benchmark_path(name, extension):
@@ -16,43 +15,63 @@ def get_benchmark_path(name, extension):
 def get_dataset_path(name):
 	return join(DATASET_PATH, f'{name}.bin')
 
+class ProgressBar:
+	bar = None
+
+	@staticmethod
+	def bind():
+		return BoundProgressFunctions(
+			ProgressBar.close,
+			ProgressBar.start,
+			ProgressBar.update
+		)
+
+	@staticmethod
+	def close():
+		if ProgressBar.bar is not None:
+			ProgressBar.bar.close()
+			ProgressBar.bar = None
+	
+	@staticmethod
+	def get_updater():
+		return ProgressUpdater(ProgressBar.bind())
+
+	@staticmethod
+	def start(desc, total):
+		ProgressBar.bar = tqdm(desc=desc, total=total)
+	
+	@staticmethod
+	def update():
+		ProgressBar.bar.update()
+
 def benchmark(title):
-	description = open(get_benchmark_path(title, 'txt'), mode='w+', encoding='utf-8')
+	global queries
+	
+	descriptions = []
 
 	build_times, build_times_heuristic = [[], []], [[], []]
 	config_tuples = list(product(ef_construction, m, ml, mmax_multiplier, use_heuristic))
 	configs = []
+	updater = ProgressBar.get_updater()
 
 	if type(nodes) is int:
-		runner = BenchmarkRunner(dimensions, nodes, queries, min_value, max_value, k)
+		runner = BenchmarkRunner(dimensions, nodes, queries, min_value, max_value, k, updater)
 	else:
-		bruteforce_path = get_dataset_path(bruteforce_filename)
-		node_path = get_dataset_path(nodes)
-		query_path = get_dataset_path(queries)
-
-		print(bruteforce_path, node_path, query_path, sep='\n')
-
 		runner = BenchmarkRunner(
-			dimensions,
-			node_path,
-			query_path,
-			bruteforce_path,
-			k
+			dimensions, get_dataset_path(nodes), get_dataset_path(queries),
+			get_dataset_path(bruteforce_filename), updater
 		)
+		queries = runner.get_query_count()
 
 	runner.reserve(len(config_tuples))
-	progress = tqdm(desc='Building configurations', total=len(config_tuples))
 
 	for item in config_tuples:
 		config = Config(item[0], False, False, item[1], item[2], item[1] * item[3], item[4])
 		configs.append(config)
 		runner.add(config, ef_search)
-		progress.update()
-
-	progress.close()
 
 	for index, benchmark in enumerate(runner.benchmarks):
-		description.write(f'Config {index}:\n{benchmark.config}\n\n')
+		descriptions.append(f'Config {index}:\n{benchmark.config}')
 
 		def append_build_time(container):
 			container[0].append(index)
@@ -71,7 +90,8 @@ def benchmark(title):
 		for i, xy in enumerate(zip(benchmark.recall, speed)):
 			plt.annotate(ef_search[i], xy)
 
-	plt.plot([1.0], [runner.bruteforce_time], label='bruteforce', marker='o')
+	if runner.bruteforce_time > 0:
+		plt.plot([1.0], [runner.bruteforce_time], label='bruteforce', marker='o')
 
 	plt.xlabel('Recall')
 	plt.ylabel('Queries per second [1/s]')
@@ -88,30 +108,33 @@ def benchmark(title):
 	plt.legend()
 	plt.savefig(get_benchmark_path(f'{title}_build', 'pdf'))
 
-	description.close()
+	with open(get_benchmark_path(title, 'txt'), mode='w+', encoding='utf-8') as file:
+		file.write('\n\n'.join(descriptions))
+		file.write('\n')
+
+SIFT = False
 
 if SIFT:
 	bruteforce_filename = 'knnQA1M'
 	ef_construction = [100]
-	ef_search = [100]
 	figure_title = 'sift'
 	nodes = 'sift1M'
 	queries = 'siftQ1M'
 	use_heuristic = [False]
 else:
-	ef_construction = [25, 50, 100, 200]
-	ef_search = [25, 50, 100, 300]
-	nodes = 30000
-	queries = nodes // 10
+	ef_construction = [200, 2000]
+	k = 100
+	max_value = 184.0
+	min_value = 0.0
+	nodes = 100000
+	queries = nodes // 100
 	use_heuristic = [False, True]
 	figure_title = str(nodes)
 
 dimensions = 128
-k = 100
-m = [20]
-max_value = 184.0
-min_value = 0.0
-ml = [0.33]
+ef_search = [25, 50, 100, 300, 500, 1000, 2000]
+m = [5, 20, 40]
+ml = [0.0, 0.33]
 mmax_multiplier = [2]
 
 benchmark(figure_title)

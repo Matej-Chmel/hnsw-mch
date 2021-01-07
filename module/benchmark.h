@@ -14,6 +14,6 @@ namespace mch
 
 		Benchmark(Config* config);
 
-		void run(Bruteforce& bruteforce, Dataset& nodes, Dataset& queries, vector<size_t>& ef, size_t k);
+		void run(Bruteforce& bruteforce, Dataset& nodes, Dataset& queries, vector<size_t>& ef, size_t k, ProgressUpdater* updater);
 	};
 }

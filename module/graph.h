@@ -22,8 +22,8 @@ namespace mch
 		void select_neighbors(float* query, vector<Node*>& out_candidates, size_t m, size_t layer_idx);
 		void approx_search(float* query, size_t ef, size_t k, FurthestSet& output);
 
-		void build(Dataset& dataset);
-		vector<FurthestSet> search_all(Dataset& dataset, size_t ef, size_t k);
+		void build(Dataset& dataset, ProgressUpdater* updater);
+		vector<FurthestSet> search_all(Dataset& dataset, size_t ef, size_t k, ProgressUpdater* updater);
 
 		string to_string();
 		void print();

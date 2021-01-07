@@ -11,9 +11,9 @@ namespace mch
 		this->count /= this->dimensions;
 
 		if(!this->coords)
-			crashf("File %s could not be opened.", path);
+			crashf("File %s could not be opened.\n", path);
 	}
-	Dataset::Dataset(size_t dimensions, size_t count, float min_value, float max_value):
+	Dataset::Dataset(size_t dimensions, size_t count, float min_value, float max_value, ProgressUpdater* updater):
 		count(count), dimensions(dimensions)
 	{
 		random_device rd;
@@ -23,8 +23,21 @@ namespace mch
 		size_t length = this->count * this->dimensions;
 		this->coords = new float[length];
 
-		for(size_t i = 0; i < length; i++)
-			this->coords[i] = dist(gen);
+		if (updater == nullptr)
+			for(size_t i = 0; i < length; i++)
+				this->coords[i] = dist(gen);
+		else
+		{
+			updater->start("Generating coordinates", length);
+
+			for(size_t i = 0; i < length; i++)
+			{
+				this->coords[i] = dist(gen);
+				updater->update();
+			}
+
+			updater->close();
+		}
 	}
 	Dataset::~Dataset()
 	{
