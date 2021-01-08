@@ -12,9 +12,10 @@ namespace mch
 		float* coords;
 		float distance;
 		float* query;
-		vector<vector<Node*>> layers;
+		vector<vector<Node*>*>* layers;
 
 		Node(float* coords, size_t level);
+		~Node();
 
 		void compute_distance_to(float* query, size_t dimensions);
 		void connect(vector<Node*>& nodes, size_t idx);

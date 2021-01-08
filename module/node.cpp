@@ -7,7 +7,19 @@ namespace mch
 
 	Node::Node(float* coords, size_t level): id(NEXT_ID++), coords(coords), distance(0), query(nullptr)
 	{
-		this->layers.resize(level + 1);
+		size_t count = level + 1;
+
+		this->layers = new vector<vector<Node*>*>;
+		this->layers->reserve(count);
+
+		for(size_t i = 0; i < count; i++)
+			this->layers->push_back(new vector<Node*>);
+	}
+	Node::~Node()
+	{
+		for(auto& layer : *this->layers)
+			delete layer;
+		delete this->layers;
 	}
 	void Node::compute_distance_to(float* query, size_t dimensions)
 	{
@@ -29,23 +41,23 @@ namespace mch
 	}
 	vector<Node*>& Node::neighborhood(size_t idx)
 	{
-		return this->layers[idx];
+		return *(*this->layers)[idx];
 	}
 	string Node::to_string()
 	{
-		if(!this->layers.size())
+		if(!this->layers->size())
 			return "";
 
 		auto result = std::to_string(this->id) + '\n';
 
-		for(auto& layer : this->layers)
+		for(auto& layer : *this->layers)
 		{
 			result += '\t';
 
 			vector<size_t> ids;
-			ids.reserve(layer.size());
+			ids.reserve(layer->size());
 
-			for(auto& item : layer)
+			for(auto& item : *layer)
 				ids.push_back(item->id);
 
 			sort(ids.begin(), ids.end());

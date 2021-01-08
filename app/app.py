@@ -75,7 +75,7 @@ def benchmark(title):
 
 		def append_build_time(container):
 			container[0].append(index)
-			container[1].append(benchmark.build_time)
+			container[1].append(benchmark.build_time / 60000)
 
 		def get_speed(time):
 			try:
@@ -103,7 +103,7 @@ def benchmark(title):
 	plt.plot(build_times[0], build_times[1], label='simple', marker='o')
 	plt.plot(build_times_heuristic[0], build_times_heuristic[1], label='heuristic', marker='o')
 	plt.xlabel('Configuration')
-	plt.ylabel('Build time [ms]')
+	plt.ylabel('Build time [min]')
 	plt.title('Build')
 	plt.legend()
 	plt.savefig(get_benchmark_path(f'{title}_build', 'pdf'))
@@ -122,19 +122,19 @@ if SIFT:
 	queries = 'siftQ1M'
 	use_heuristic = [False]
 else:
-	ef_construction = [200, 2000]
+	ef_construction = [100, 500, 1000]
 	k = 100
 	max_value = 184.0
 	min_value = 0.0
-	nodes = 100000
+	nodes = 30000
 	queries = nodes // 100
-	use_heuristic = [False, True]
+	use_heuristic = [False]
 	figure_title = str(nodes)
 
 dimensions = 128
-ef_search = [25, 50, 100, 300, 500, 1000, 2000]
-m = [5, 20, 40]
-ml = [0.0, 0.33]
+ef_search = [25, 50, 100, 300, 500, 1000, 2000, 5000, 10000, 20000]
+m = [20]
+ml = [0.33]
 mmax_multiplier = [2]
 
 benchmark(figure_title)
