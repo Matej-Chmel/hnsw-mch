@@ -12,8 +12,6 @@ namespace mch
 
 		FurthestSet();
 		FurthestSet(Node* node);
-		FurthestSet(vector<Node*>& nodes);
-		FurthestSet(const FurthestSet& other);
 
 		iterator begin();
 		vector<Node*> copy_nodes();

@@ -87,11 +87,12 @@ def benchmark(title):
 		speed = [get_speed(time) for time in benchmark.search_times]
 		plt.plot(benchmark.recall, speed, label=index, marker='o')
 
-		for i, xy in enumerate(zip(benchmark.recall, speed)):
-			plt.annotate(ef_search[i], xy)
+		if index == 0:
+			for i, xy in enumerate(zip(benchmark.recall, speed)):
+				plt.annotate(ef_search[i], xy)
 
 	if runner.bruteforce_time > 0:
-		plt.plot([1.0], [runner.bruteforce_time], label='bruteforce', marker='o')
+		plt.plot([1.0], [get_speed(runner.bruteforce_time)], label='bruteforce', marker='o')
 
 	plt.xlabel('Recall')
 	plt.ylabel('Queries per second [1/s]')
@@ -122,7 +123,7 @@ if SIFT:
 	queries = 'siftQ1M'
 	use_heuristic = [False]
 else:
-	ef_construction = [100, 500, 1000]
+	ef_construction = [100]
 	k = 100
 	max_value = 184.0
 	min_value = 0.0
@@ -132,9 +133,9 @@ else:
 	figure_title = str(nodes)
 
 dimensions = 128
-ef_search = [25, 50, 100, 300, 500, 1000, 2000, 5000, 10000, 20000]
-m = [20]
-ml = [0.33]
+ef_search = [25, 50, 100, 500, 2000, 10000]
+m = [5, 20, 40]
+ml = [0.0, 0.33, 0.66]
 mmax_multiplier = [2]
 
 benchmark(figure_title)

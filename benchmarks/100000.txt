@@ -2,13 +2,13 @@ Config 0:
 ef: 100
 extend_candidates: false
 keep_pruned: false
-m: 20
+m: 5
 ml: 0.330
-mmax: 40
+mmax: 10
 use_heuristic: false
 
 Config 1:
-ef: 500
+ef: 100
 extend_candidates: false
 keep_pruned: false
 m: 20
@@ -17,10 +17,10 @@ mmax: 40
 use_heuristic: false
 
 Config 2:
-ef: 1000
+ef: 100
 extend_candidates: false
 keep_pruned: false
-m: 20
+m: 40
 ml: 0.330
-mmax: 40
+mmax: 80
 use_heuristic: false

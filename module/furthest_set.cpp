@@ -8,10 +8,6 @@ namespace mch
 	{
 		this->nodes.push_back(node);
 	}
-	FurthestSet::FurthestSet(vector<Node*>& nodes): nodes(nodes)
-	{}
-	FurthestSet::FurthestSet(const FurthestSet& other) : nodes(other.nodes)
-	{}
 	FurthestSet::iterator FurthestSet::begin()
 	{
 		return this->nodes.begin();
