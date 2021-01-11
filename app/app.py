@@ -119,23 +119,25 @@ if SIFT:
 	bruteforce_filename = 'knnQA1M'
 	ef_construction = [100]
 	figure_title = 'sift'
+	m = [20]
+	ml = [0.33]
 	nodes = 'sift1M'
 	queries = 'siftQ1M'
 	use_heuristic = [False]
 else:
-	ef_construction = [100]
+	ef_construction = [100, 300]
 	k = 100
+	m = [5, 20]
+	ml = [0.0, 0.33]
 	max_value = 184.0
 	min_value = 0.0
-	nodes = 30000
+	nodes = 10000
 	queries = nodes // 100
 	use_heuristic = [False]
 	figure_title = str(nodes)
 
 dimensions = 128
-ef_search = [25, 50, 100, 500, 2000, 10000]
-m = [5, 20, 40]
-ml = [0.0, 0.33, 0.66]
+ef_search = [25, 50, 100, 500, 1000]
 mmax_multiplier = [2]
 
 benchmark(figure_title)

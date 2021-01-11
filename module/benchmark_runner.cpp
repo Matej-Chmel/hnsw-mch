@@ -25,7 +25,7 @@ namespace mch
 	):
 		nodes(dimensions, node_path), queries(dimensions, query_path), updater(updater), bruteforce_time(0)
 	{
-		this->k = this->bruteforce.load(bruteforce_path, this->nodes.coords, this->queries.count);
+		this->k = this->bruteforce.load(bruteforce_path, this->nodes, this->queries.count);
 	}
     void BenchmarkRunner::add(Config* config, vector<size_t> ef)
     {

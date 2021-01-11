@@ -1,31 +1,39 @@
 #pragma once
 #include "config.h"
 #include "dataset.h"
+#include "nearest_set.h"
 
 namespace mch
 {
 	class Graph
 	{
-	public:
 		Config* config;
-		size_t dimensions;
-		Node* entry;
+		Dataset* dataset;
+		vector<float> distances;
+		size_t entry_idx;
 		size_t entry_level;
-		vector<Node> nodes;
+		vector<vector<vector<size_t>*>*> neighbors;
+		vector<float*> relations;
 
-		Graph(Config* config);
-
+		void approx_search(float* query, size_t ef, size_t k, vector<float*>& output);
+		void connect(vector<size_t>& nodes, size_t query_idx, size_t layer_idx);
+		size_t create_node(size_t level);
 		size_t generate_level();
+		float* get_distance_ptr(float* query, size_t node_idx);
+		size_t get_node_idx(float* distance_ptr);
 		void insert(float* query);
-		void search_layer_one(float* query, Node*& out_entry, size_t layer_idx);
+		vector<size_t>& neighborhood(size_t query_idx, size_t layer_idx);
 		void search_layer(float* query, FurthestSet& out_entries, size_t ef, size_t layer_idx);
-		void select_neighbors(float* query, vector<Node*>& out_candidates, size_t m, size_t layer_idx);
-		void approx_search(float* query, size_t ef, size_t k, FurthestSet& output);
+		void search_layer_one(float* query, size_t& out_node_idx, size_t layer_idx);
+		vector<size_t> select_neighbors(vector<float*>&& distances);
+		void select_neighbors(float* query, vector<size_t>& out_nodes);
 
-		void build(Dataset& dataset, ProgressUpdater* updater);
-		vector<FurthestSet> search_all(Dataset& dataset, size_t ef, size_t k, ProgressUpdater* updater);
+	public:
+		Graph(Config* config, Dataset* dataset);
+		~Graph();
 
-		string to_string();
-		void print();
+		void build(ProgressUpdater* updater);
+		void build(size_t start_idx, size_t end_idx, ProgressUpdater* updater);
+		vector<vector<float*>> search(Dataset& dataset, size_t ef, size_t k, ProgressUpdater* updater);
 	};
 }

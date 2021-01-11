@@ -1,24 +1,25 @@
 #pragma once
 #include "comparators.h"
+#include "mch.h"
 
 namespace mch
 {
 	class FurthestSet
 	{
 	public:
-		typedef vector<Node*>::iterator iterator;
+		typedef vector<float*>::iterator iterator;
 
-		vector<Node*> nodes;
+		vector<float*> distances;
 
 		FurthestSet();
-		FurthestSet(Node* node);
+		FurthestSet(float* distance);
 
 		iterator begin();
-		vector<Node*> copy_nodes();
 		iterator end();
-		Node* front();
+		float* front();
+		vector<float*> get_distances_copy();
 		void keep_only_k_nearest(size_t k);
-		void insert(Node* item);
+		void insert(float* distance);
 		void remove_front();
 		size_t size();
 	};

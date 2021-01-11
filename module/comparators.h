@@ -1,16 +1,15 @@
 #pragma once
 #include "bruteforce_item.h"
-#include "node.h"
 
 namespace mch
 {
 	struct NearestComparator
 	{
-		bool operator()(const Node* const a, const Node* const b) const;
+		bool operator()(const float* const a, const float* const b) const;
 	};
 	struct FurthestComparator
 	{
-		bool operator()(const Node* const a, const Node* const b) const;
+		bool operator()(const float* const a, const float* const b) const;
 	};
 	struct BruteforceComparator
 	{

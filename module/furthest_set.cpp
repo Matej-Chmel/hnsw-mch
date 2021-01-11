@@ -4,48 +4,48 @@ namespace mch
 {
 	FurthestSet::FurthestSet()
 	{}
-	FurthestSet::FurthestSet(Node* node)
+	FurthestSet::FurthestSet(float* distance)
 	{
-		this->nodes.push_back(node);
+		this->distances.push_back(distance);
 	}
 	FurthestSet::iterator FurthestSet::begin()
 	{
-		return this->nodes.begin();
-	}
-	vector<Node*> FurthestSet::copy_nodes()
-	{
-		return vector<Node*>(this->nodes);
+		return this->distances.begin();
 	}
 	FurthestSet::iterator FurthestSet::end()
 	{
-		return this->nodes.end();
+		return this->distances.end();
 	}
-	Node* FurthestSet::front()
+	float* FurthestSet::front()
 	{
-		return this->nodes.front();
+		return this->distances.front();
+	}
+	vector<float*> FurthestSet::get_distances_copy()
+	{
+		return vector<float*>(this->distances);
 	}
 	void FurthestSet::keep_only_k_nearest(size_t k)
 	{
-		make_heap(this->nodes.begin(), this->nodes.end(), furthest_cmp);
-		sort_heap(this->nodes.begin(), this->nodes.end(), furthest_cmp);
+		make_heap(this->begin(), this->end(), furthest_cmp);
+		sort_heap(this->begin(), this->end(), furthest_cmp);
 
-		if(this->nodes.size() < k)
-			k = this->nodes.size();
+		if(this->distances.size() < k)
+			k = this->distances.size();
 
-		this->nodes.erase(this->nodes.begin() + k, this->nodes.end());
+		this->distances.erase(this->begin() + k, this->end());
 	}
-	void FurthestSet::insert(Node* item)
+	void FurthestSet::insert(float* distance)
 	{
-		this->nodes.push_back(item);
-		push_heap(this->nodes.begin(), this->nodes.end(), furthest_cmp);
+		this->distances.push_back(distance);
+		push_heap(this->begin(), this->end(), furthest_cmp);
 	}
 	void FurthestSet::remove_front()
 	{
-		pop_heap(this->nodes.begin(), this->nodes.end(), furthest_cmp);
-		this->nodes.pop_back();
+		pop_heap(this->begin(), this->end(), furthest_cmp);
+		this->distances.pop_back();
 	}
 	size_t FurthestSet::size()
 	{
-		return this->nodes.size();
+		return this->distances.size();
 	}
 }

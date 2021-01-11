@@ -65,7 +65,7 @@ namespace mch
 			updater->close();
 		}
 	}
-	float Bruteforce::compare(vector<FurthestSet>& approx_results)
+	float Bruteforce::compare(vector<vector<float*>>& approx_results)
 	{
 		float correct = 0;
 		size_t k = this->results[0].size();
@@ -76,14 +76,14 @@ namespace mch
 			auto bruteforce_result = &this->results[i];
 			auto& approx_result = approx_results[i];
 
-			for(auto& item : approx_result)
-				if(bruteforce_result->find(item->coords) != bruteforce_result->end())
+			for(auto& coords : approx_result)
+				if(bruteforce_result->find(coords) != bruteforce_result->end())
 					correct++;
 		}
 
 		return correct / (query_count * k);
 	}
-	size_t Bruteforce::load(const char* path, float* nodes, size_t query_count)
+	size_t Bruteforce::load(const char* path, Dataset& nodes, size_t query_count)
 	{
 		size_t length;
 		int* positions = load_file_data<int>(path, length);
@@ -97,7 +97,7 @@ namespace mch
 			size_t end_index = (i + 1) * k;
 
 			for(size_t j = i * k; j < end_index; j++)
-				result->insert(nodes + positions[j]);
+				result->insert(nodes.get_coord(positions[j]));
 		}
 
 		delete[] positions;

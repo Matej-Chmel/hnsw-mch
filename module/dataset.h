@@ -1,5 +1,4 @@
 #pragma once
-#include "nearest_set.h"
 #include "progress_updater.h"
 
 namespace mch
