@@ -51,11 +51,12 @@ namespace mch
 	}
 	float* Graph::get_distance_ptr(float* query, size_t node_idx)
 	{
-		if(this->relations[node_idx] == query)
-			return this->distances.data() + node_idx;
+		if(this->relations[node_idx] != query)
+		{
+			this->relations[node_idx] = query;
+			this->distances[node_idx] = distance_between(this->dataset->get_coord(node_idx), query, this->dataset->dimensions);
+		}
 
-		this->relations[node_idx] = query;
-		this->distances[node_idx] = distance_between(this->dataset->get_coord(node_idx), query, this->dataset->dimensions);
 		return this->distances.data() + node_idx;
 	}
 	size_t Graph::get_node_idx(float* distance_ptr)
