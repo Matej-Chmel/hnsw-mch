@@ -11,7 +11,7 @@ namespace mch
 		size_t dimensions;
 
 		Dataset(size_t dimensions, const char* path);
-		Dataset(size_t dimensions, size_t count, float min_value, float max_value, ProgressUpdater* updater);
+		Dataset(size_t dimensions, size_t count, float min_value, float max_value, size_t seed, ProgressUpdater* updater);
 		~Dataset();
 
 		float* get_coord(size_t idx);

@@ -42,13 +42,14 @@ PYBIND11_MODULE(hnsw_mch, package)
 		.def_readonly("search_times", &Benchmark::search_times);
 
 	py::class_<BenchmarkRunner>(package, "BenchmarkRunner")
-		.def(py::init<size_t, size_t, size_t, float, float, size_t, ProgressUpdater*>(),
+		.def(py::init<size_t, size_t, size_t, float, float, size_t, size_t*, ProgressUpdater*>(),
 			py::arg("dimensions"), py::arg("node_count"), py::arg("query_count"),
-			py::arg("min_value"), py::arg("max_value"), py::arg("k"), py::arg("updater") = nullptr
+			py::arg("min_value"), py::arg("max_value"), py::arg("k"),
+			py::arg("seed") = nullptr, py::arg("updater") = nullptr
 		)
-		.def(py::init<size_t, const char*, const char*, const char*, ProgressUpdater*>(),
+		.def(py::init<size_t, const char*, const char*, const char*, size_t*, ProgressUpdater*>(),
 			py::arg("dimensions"), py::arg("node_path"), py::arg("query_path"),
-			py::arg("bruteforce_path"), py::arg("updater") = nullptr
+			py::arg("bruteforce_path"), py::arg("seed") = nullptr, py::arg("updater") = nullptr
 		)
 		.def_readonly("bruteforce_time", &BenchmarkRunner::bruteforce_time)
 		.def_readonly("benchmarks", &BenchmarkRunner::benchmarks)

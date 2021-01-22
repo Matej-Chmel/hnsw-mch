@@ -5,9 +5,14 @@ namespace mch
 {
 	Benchmark::Benchmark(Config* config): build_time(0), config(config)
 	{}
-	void Benchmark::run(Bruteforce& bruteforce, Dataset& nodes, Dataset& queries, vector<size_t>& ef, size_t k, ProgressUpdater* updater)
+	void Benchmark::run
+	(
+		Bruteforce& bruteforce, Dataset& nodes, Dataset& queries,
+		vector<size_t>& ef, size_t k, size_t seed,
+		ProgressUpdater* updater
+	)
 	{
-		Graph graph(this->config, &nodes);
+		Graph graph(this->config, &nodes, seed);
 		Timer timer;
 
 		timer.start();

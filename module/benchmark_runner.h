@@ -5,11 +5,14 @@ namespace mch
 {
 	class BenchmarkRunner
 	{
+		size_t seed;
 		Bruteforce bruteforce;
 		size_t k;
 		Dataset nodes;
 		Dataset queries;
 		ProgressUpdater* updater;
+
+		size_t create_seed(size_t* seed_ptr);
 
 	public:
 		ll bruteforce_time;
@@ -18,13 +21,14 @@ namespace mch
 		BenchmarkRunner
 		(
 			size_t dimensions, size_t node_count, size_t query_count,
-			float min_value, float max_value, size_t k, ProgressUpdater* updater
+			float min_value, float max_value, size_t k,
+			size_t* seed = nullptr, ProgressUpdater* updater = nullptr
 		);
 		BenchmarkRunner
 		(
 			size_t dimensions,
 			const char* node_path, const char* query_path, const char* bruteforce_path,
-			ProgressUpdater* updater
+			size_t* seed = nullptr, ProgressUpdater* updater = nullptr
 		);
 
 		void add(Config* config, vector<size_t> ef);

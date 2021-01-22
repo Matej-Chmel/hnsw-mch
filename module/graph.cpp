@@ -25,9 +25,26 @@ namespace mch
 
 		for(auto& node_idx : nodes)
 		{
+			if(node_idx == query_idx)
+				continue;
+
 			layer.push_back(node_idx);
 			this->neighborhood(node_idx, layer_idx).push_back(query_idx);
 		}
+	}
+	void Graph::convert_distances_to_indexes(vector<float*>& distances, vector<size_t>& out_indexes)
+	{
+		out_indexes.reserve(distances.size());
+
+		for(auto& distance : distances)
+			out_indexes.emplace_back(this->get_node_idx(distance));
+	}
+	void Graph::convert_indexes_to_distances(float* query, vector<size_t>& indexes, vector<float*>& out_distances)
+	{
+		out_distances.reserve(indexes.size());
+
+		for(auto& item_idx : indexes)
+			out_distances.emplace_back(this->get_distance_ptr(query, item_idx));
 	}
 	size_t Graph::create_node(size_t level)
 	{
@@ -43,11 +60,7 @@ namespace mch
 	}
 	size_t Graph::generate_level()
 	{
-		static random_device rd;
-		static mt19937 gen(rd());
-		static uniform_real_distribution<float> dist(0, 1);
-
-		return size_t(floorf(-logf(dist(gen)) * this->config->ml));
+		return size_t(floorf(-logf(this->distribution(this->generator)) * this->config->ml));
 	}
 	float* Graph::get_distance_ptr(float* query, size_t node_idx)
 	{
@@ -77,7 +90,7 @@ namespace mch
 		for(size_t i = min(this->entry_level, query_level);; i--)
 		{
 			this->search_layer(query, found, this->config->ef, i);
-			auto neighbors = this->select_neighbors(found.get_distances_copy());
+			auto neighbors = this->select_neighbors(query, found, this->config->m, i);
 			this->connect(neighbors, query_idx, i);
 
 			for(auto& item_idx : neighbors)
@@ -85,7 +98,7 @@ namespace mch
 				auto& e_conn = this->neighborhood(item_idx, i);
 
 				if(e_conn.size() > this->config->mmax)
-					this->select_neighbors(query, e_conn);
+					this->select_neighbors(query, e_conn, this->config->mmax, i);
 			}
 
 			if(i == 0)
@@ -100,7 +113,23 @@ namespace mch
 	}
 	vector<size_t>& Graph::neighborhood(size_t query_idx, size_t layer_idx)
 	{
-		return *(*this->neighbors[query_idx])[layer_idx];
+		auto layers = this->neighbors[query_idx];
+
+		try
+		{
+			return *layers->at(layer_idx);
+		}
+		catch(const out_of_range& e)
+		{
+			size_t count = (layer_idx + 1) - layers->size();
+
+			for(size_t i = 0; i < count; i++)
+				layers->emplace_back(new vector<size_t>);
+
+			return*layers->operator[](layer_idx);
+		}
+
+		// return *(*this->neighbors[query_idx])[layer_idx];
 	}
 	void Graph::search_layer(float* query, FurthestSet& out_entries, size_t ef, size_t layer_idx)
 	{
@@ -185,45 +214,140 @@ namespace mch
 			}
 		}
 	}
-	vector<size_t> Graph::select_neighbors(vector<float*>&& distances)
+	vector<size_t> Graph::select_neighbors(float* query, FurthestSet& set, size_t m, size_t layer_idx)
 	{
-		if(distances.size() > this->config->m)
+		vector<size_t> nodes;
+
+		if(this->config->use_heuristic)
 		{
+			NearestSet found(set);
+			NearestSet discarded;
+
+			if(this->config->extend_candidates)
+			{
+				unordered_set<size_t> visited;
+
+				for(auto& item_distance : found)
+					for(auto& item_idx : this->neighborhood(this->get_node_idx(item_distance), layer_idx))
+						visited.insert(item_idx);
+
+				for(const auto& item_idx : visited)
+					found.insert(this->get_distance_ptr(query, item_idx));
+			}
+
+			nodes.reserve(m);
+
+			if(found.size() > 0 && nodes.size() < m)
+			{
+				auto item_distance = found.pop_front();
+				auto current_distance = *item_distance;
+				nodes.push_back(this->get_node_idx(item_distance));
+
+				while(found.size() > 0 && nodes.size() < m)
+				{
+					item_distance = found.pop_front();
+
+					if(*item_distance < current_distance)
+					{
+						current_distance = *item_distance;
+						nodes.push_back(this->get_node_idx(item_distance));
+					}
+					else if(this->config->keep_pruned)
+						discarded.insert(item_distance);
+				}
+			}
+
+			if(this->config->keep_pruned)
+			{
+				while(discarded.size() > 0 && nodes.size() < m)
+					nodes.push_back(this->get_node_idx(discarded.pop_front()));
+			}
+		}
+		else
+		{
+			auto distances = set.get_distances_copy();
 			sort_heap(distances.begin(), distances.end(), furthest_cmp);
-			distances.resize(this->config->m);
+			this->convert_distances_to_indexes(distances, nodes);
+			nodes.resize(m);
 		}
 
-		vector<size_t> neighbors;
-		neighbors.reserve(distances.size());
-
-		for(auto& distance : distances)
-			neighbors.emplace_back(this->get_node_idx(distance));
-
-		return neighbors;
+		return nodes;
 	}
-	void Graph::select_neighbors(float* query, vector<size_t>& out_nodes)
+	void Graph::select_neighbors(float* query, vector<size_t>& out_nodes, size_t m, size_t layer_idx)
 	{
-		if(out_nodes.size() > this->config->mmax)
+		if(this->config->use_heuristic)
 		{
-			vector<float*> distances;
-			distances.reserve(out_nodes.size());
+			NearestSet found;
+			NearestSet discarded;
 
-			for(auto& item_idx : out_nodes)
-				distances.emplace_back(this->get_distance_ptr(query, item_idx));
+			if(this->config->extend_candidates)
+			{
+				unordered_set<size_t> visited;
 
-			sort(distances.begin(), distances.end(), furthest_cmp);
-			distances.resize(this->config->mmax);
+				for(auto& item_idx : out_nodes)
+					for(auto& adj : this->neighborhood(item_idx, layer_idx))
+						visited.insert(adj);
+
+				for(const auto& item_idx : visited)
+					found.insert(this->get_distance_ptr(query, item_idx));
+			}
+			else
+				for(const auto& item_idx : out_nodes)
+					found.insert(this->get_distance_ptr(query, item_idx));
 
 			out_nodes.clear();
+			out_nodes.reserve(m);
 
-			for(auto& distance : distances)
-				out_nodes.emplace_back(this->get_node_idx(distance));
+			if(found.size() > 0 && out_nodes.size() < m)
+			{
+				auto item_distance = found.pop_front();
+				auto current_distance = *item_distance;
+				out_nodes.push_back(this->get_node_idx(item_distance));
+
+				while(found.size() > 0 && out_nodes.size() < m)
+				{
+					item_distance = found.pop_front();
+
+					if(current_distance < *item_distance)
+					{
+						current_distance = *item_distance;
+						out_nodes.push_back(this->get_node_idx(item_distance));
+					}
+					else if(this->config->keep_pruned)
+						discarded.insert(item_distance);
+				}
+			}
+
+			if(this->config->keep_pruned)
+			{
+				while(discarded.size() > 0 && out_nodes.size() < m)
+					out_nodes.push_back(this->get_node_idx(discarded.pop_front()));
+			}
+		}
+		else
+		{
+			vector<float*> distances;
+			this->convert_indexes_to_distances(query, out_nodes, distances);
+			sort(distances.begin(), distances.end(), furthest_cmp);
+			out_nodes.clear();
+			this->convert_distances_to_indexes(distances, out_nodes);
+			out_nodes.resize(m);
 		}
 	}
-	Graph::Graph(Config* config, Dataset* dataset): config(config), dataset(dataset), entry_idx(0), entry_level(0)
-	{}
+	Graph::Graph(Config* config, Dataset* dataset, size_t seed):
+		config(config), dataset(dataset), distribution(0, 1), entry_idx(0), entry_level(0), generator(seed)
+	{
+		#ifdef DEBUG_GRAPH
+			this->debug_file = fopen("..\\native_app\\debug_files\\a.txt", "w+");
+		#endif
+	}
 	Graph::~Graph()
 	{
+		#ifdef DEBUG_GRAPH
+			this->add_neighbors_record();
+			fclose(this->debug_file);
+		#endif
+
 		for(auto& layers : this->neighbors)
 		{
 			for(auto& layer : *layers)
@@ -297,4 +421,52 @@ namespace mch
 
 		return results;
 	}
+
+	#ifdef DEBUG_GRAPH
+
+	void Graph::add_neighbors_record()
+	{
+		this->neighbors_to_file(this->debug_file);
+	}
+	void Graph::neighbors_to_file(FILE* file)
+	{
+		auto neighbors_string = this->neighbors_to_string();
+		fwrite(neighbors_string.c_str(), sizeof(char), neighbors_string.length(), file);
+	}
+	string Graph::neighbors_to_string()
+	{
+		size_t node_count = this->neighbors.size();
+		string result = "";
+		
+		for(size_t i = 0; i < node_count; i++)
+		{
+			auto& layers = this->neighbors[i];
+			result += to_string(i);
+
+			for(auto& layer : *layers)
+			{
+				result += "\n\t";
+
+				if(layer->size() == 0)
+				{
+					result += "empty";
+					continue;
+				}
+
+				auto sorted_layer = *layer;
+				size_t last_index = sorted_layer.size() - 1;
+				sort(sorted_layer.begin(), sorted_layer.end());
+
+				for(size_t i = 0; i < last_index; i++)
+					result += to_string(sorted_layer[i]) + ' ';
+				result += to_string(sorted_layer[last_index]);
+			}
+
+			result += "\n\n";
+		}
+
+		return result;
+	}
+
+	#endif
 }

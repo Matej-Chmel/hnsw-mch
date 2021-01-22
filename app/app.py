@@ -55,11 +55,15 @@ def benchmark(title):
 	updater = ProgressBar.get_updater()
 
 	if type(nodes) is int:
-		runner = BenchmarkRunner(dimensions, nodes, queries, min_value, max_value, k, updater)
+		runner = BenchmarkRunner(
+			dimensions, nodes, queries,
+			min_value, max_value, k,
+			seed, updater
+		)
 	else:
 		runner = BenchmarkRunner(
 			dimensions, get_dataset_path(nodes), get_dataset_path(queries),
-			get_dataset_path(bruteforce_filename), updater
+			get_dataset_path(bruteforce_filename), seed, updater
 		)
 		queries = runner.get_query_count()
 
@@ -125,19 +129,20 @@ if SIFT:
 	queries = 'siftQ1M'
 	use_heuristic = [False]
 else:
-	ef_construction = [100, 300]
+	ef_construction = [100]
 	k = 100
-	m = [5, 20]
-	ml = [0.0, 0.33]
+	m = [20]
+	ml = [0.33]
 	max_value = 184.0
 	min_value = 0.0
 	nodes = 10000
 	queries = nodes // 100
-	use_heuristic = [False]
+	use_heuristic = [False, True]
 	figure_title = str(nodes)
 
 dimensions = 128
 ef_search = [25, 50, 100, 500, 1000]
 mmax_multiplier = [2]
+seed = 1
 
 benchmark(figure_title)

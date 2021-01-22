@@ -15,8 +15,8 @@ constexpr float max_value = 184;
 constexpr float min_value = 0;
 constexpr float ml = 0.33;
 constexpr size_t mmax = m * 2;
-constexpr size_t nodes = 100000;
-constexpr size_t queries = 1000;
+constexpr size_t nodes = 10000;
+constexpr size_t queries = 100;
 
 string get_dataset_path(string filename)
 {
@@ -54,6 +54,7 @@ int main()
 {
 	Config config(ef_construction, false, false, m, ml, mmax, false);
 	vector<size_t> ef = { 25, 50, 100, 300, 500, 1000 };
+	size_t seed = 1;
 
 	#ifdef PROFILE
 		ProgressUpdater* updater = nullptr;
@@ -65,10 +66,10 @@ int main()
 		BenchmarkRunner runner
 		(
 			dimensions, get_dataset_path("sift1M").c_str(), get_dataset_path("siftQ1M").c_str(),
-			get_dataset_path("knnQA1M").c_str(), updater
+			get_dataset_path("knnQA1M").c_str(), &seed, updater
 		);
 	#else
-		BenchmarkRunner runner(dimensions, nodes, queries, min_value, max_value, k, updater);
+		BenchmarkRunner runner(dimensions, nodes, queries, min_value, max_value, k, &seed, updater);
 	#endif
 
 	runner.add(&config, ef);

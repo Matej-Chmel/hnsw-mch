@@ -13,11 +13,10 @@ namespace mch
 		if(!this->coords)
 			crashf("File %s could not be opened.\n", path);
 	}
-	Dataset::Dataset(size_t dimensions, size_t count, float min_value, float max_value, ProgressUpdater* updater):
+	Dataset::Dataset(size_t dimensions, size_t count, float min_value, float max_value, size_t seed, ProgressUpdater* updater):
 		count(count), dimensions(dimensions)
 	{
-		random_device rd;
-		mt19937 gen(rd());
+		mt19937 gen(seed);
 		uniform_real_distribution<float> dist(min_value, max_value);
 
 		size_t length = this->count * this->dimensions;

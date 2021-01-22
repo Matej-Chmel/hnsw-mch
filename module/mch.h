@@ -6,6 +6,7 @@
 #include <cstdio>
 #include <functional>
 #include <random>
+#include <stdexcept>
 #include <string>
 #include <unordered_set>
 #include <vector>
@@ -28,4 +29,6 @@ namespace mch
 	typedef mt19937_64 Generator;
 
 	#endif
+
+	#define DEBUG_GRAPH
 }

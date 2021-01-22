@@ -6,3 +6,12 @@ m: 20
 ml: 0.330
 mmax: 40
 use_heuristic: false
+
+Config 1:
+ef: 100
+extend_candidates: false
+keep_pruned: false
+m: 20
+ml: 0.330
+mmax: 40
+use_heuristic: true
