@@ -220,6 +220,14 @@ namespace mch
 
 		if(this->config->use_heuristic)
 		{
+			if(set.size() < m)
+			{
+				for(auto& element : set)
+					nodes.push_back(this->get_node_idx(element));
+
+				return nodes;
+			}
+
 			NearestSet found(set);
 			NearestSet discarded;
 
@@ -268,7 +276,9 @@ namespace mch
 			auto distances = set.get_distances_copy();
 			sort_heap(distances.begin(), distances.end(), furthest_cmp);
 			this->convert_distances_to_indexes(distances, nodes);
-			nodes.resize(m);
+
+			if (nodes.size() > m)
+				nodes.resize(m);
 		}
 
 		return nodes;
@@ -277,6 +287,9 @@ namespace mch
 	{
 		if(this->config->use_heuristic)
 		{
+			if(out_nodes.size() < m)
+				return;
+
 			NearestSet found;
 			NearestSet discarded;
 
@@ -331,7 +344,9 @@ namespace mch
 			sort(distances.begin(), distances.end(), furthest_cmp);
 			out_nodes.clear();
 			this->convert_distances_to_indexes(distances, out_nodes);
-			out_nodes.resize(m);
+
+			if (out_nodes.size() > m)
+				out_nodes.resize(m);
 		}
 	}
 	Graph::Graph(Config* config, Dataset* dataset, size_t seed):
@@ -453,7 +468,7 @@ namespace mch
 					continue;
 				}
 
-				auto sorted_layer = *layer;
+				vector<size_t> sorted_layer = *layer;
 				size_t last_index = sorted_layer.size() - 1;
 				sort(sorted_layer.begin(), sorted_layer.end());
 

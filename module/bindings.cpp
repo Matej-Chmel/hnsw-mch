@@ -47,9 +47,9 @@ PYBIND11_MODULE(hnsw_mch, package)
 			py::arg("min_value"), py::arg("max_value"), py::arg("k"),
 			py::arg("seed") = nullptr, py::arg("updater") = nullptr
 		)
-		.def(py::init<size_t, const char*, const char*, const char*, size_t*, ProgressUpdater*>(),
-			py::arg("dimensions"), py::arg("node_path"), py::arg("query_path"),
-			py::arg("bruteforce_path"), py::arg("seed") = nullptr, py::arg("updater") = nullptr
+		.def(py::init<size_t, const char*, const char*, const char*, size_t*, size_t*, ProgressUpdater*>(),
+			py::arg("dimensions"), py::arg("node_path"), py::arg("query_path"), py::arg("bruteforce_path"),
+			py::arg("count") = nullptr, py::arg("seed") = nullptr, py::arg("updater") = nullptr
 		)
 		.def_readonly("bruteforce_time", &BenchmarkRunner::bruteforce_time)
 		.def_readonly("benchmarks", &BenchmarkRunner::benchmarks)

@@ -10,7 +10,7 @@ namespace mch
 		size_t count;
 		size_t dimensions;
 
-		Dataset(size_t dimensions, const char* path);
+		Dataset(size_t dimensions, const char* path, size_t* count);
 		Dataset(size_t dimensions, size_t count, float min_value, float max_value, size_t seed, ProgressUpdater* updater);
 		~Dataset();
 

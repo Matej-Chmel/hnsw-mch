@@ -4,19 +4,22 @@
 using namespace mch;
 
 //#define PROFILE
-//#define SIFT
+#define SIFT
 
 constexpr size_t dimensions = 128;
-constexpr size_t ef_construction = 100;
-constexpr size_t k = 100;
-constexpr size_t m = 20;
-constexpr size_t max_filename_length = 256;
+constexpr size_t ef_construction = 200;
+constexpr size_t k = 10;
+size_t limit_count = 17;
+constexpr size_t m = 16;
 constexpr float max_value = 184;
 constexpr float min_value = 0;
-constexpr float ml = 0.33;
+const float ml = logf(m);
 constexpr size_t mmax = m * 2;
-constexpr size_t nodes = 10000;
-constexpr size_t queries = 100;
+constexpr size_t nodes = 100000;
+constexpr size_t queries = 1000;
+size_t seed = 100;
+
+constexpr size_t max_filename_length = 256;
 
 string get_dataset_path(string filename)
 {
@@ -52,9 +55,8 @@ void print_results(const char* title, BenchmarkRunner& runner, size_t idx, vecto
 
 int main()
 {
-	Config config(ef_construction, false, false, m, ml, mmax, false);
-	vector<size_t> ef = { 25, 50, 100, 300, 500, 1000 };
-	size_t seed = 1;
+	Config config(ef_construction, false, false, m, ml, mmax, true);
+	vector<size_t> ef = { 10 };
 
 	#ifdef PROFILE
 		ProgressUpdater* updater = nullptr;
@@ -65,8 +67,8 @@ int main()
 	#ifdef SIFT
 		BenchmarkRunner runner
 		(
-			dimensions, get_dataset_path("sift1M").c_str(), get_dataset_path("siftQ1M").c_str(),
-			get_dataset_path("knnQA1M").c_str(), &seed, updater
+			dimensions, get_dataset_path("sift1M").c_str(), get_dataset_path("siftQ1M").c_str(), get_dataset_path("knnQA1M").c_str(),
+			&limit_count, &seed, updater
 		);
 	#else
 		BenchmarkRunner runner(dimensions, nodes, queries, min_value, max_value, k, &seed, updater);

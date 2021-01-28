@@ -13,6 +13,7 @@ namespace mch
 		ProgressUpdater* updater;
 
 		size_t create_seed(size_t* seed_ptr);
+		void start_bruteforce();
 
 	public:
 		ll bruteforce_time;
@@ -28,7 +29,7 @@ namespace mch
 		(
 			size_t dimensions,
 			const char* node_path, const char* query_path, const char* bruteforce_path,
-			size_t* seed = nullptr, ProgressUpdater* updater = nullptr
+			size_t* count = nullptr, size_t* seed = nullptr, ProgressUpdater* updater = nullptr
 		);
 
 		void add(Config* config, vector<size_t> ef);

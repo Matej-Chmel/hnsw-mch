@@ -13,6 +13,13 @@ namespace mch
 
 		return *seed_ptr;
 	}
+	void BenchmarkRunner::start_bruteforce()
+	{
+		Timer timer;
+		timer.start();
+		this->bruteforce.search(this->nodes, this->queries, this->k, this->updater);
+		this->bruteforce_time = timer.stop();
+	}
 	BenchmarkRunner::BenchmarkRunner
 	(
 		size_t dimensions, size_t node_count, size_t query_count,
@@ -21,29 +28,31 @@ namespace mch
 	):
 		seed(this->create_seed(seed)), k(k), nodes(dimensions, node_count, min_value, max_value, this->seed, updater),
 		queries(dimensions, query_count, min_value, max_value, this->seed, updater), updater(updater)
-    {
-		Timer timer;
-
-		timer.start();
-		this->bruteforce.search(this->nodes, this->queries, this->k, this->updater);
-		this->bruteforce_time = timer.stop();
-    }
+	{
+		this->start_bruteforce();
+	}
 	BenchmarkRunner::BenchmarkRunner
 	(
 		size_t dimensions,
 		const char* node_path, const char* query_path, const char* bruteforce_path,
-		size_t* seed, ProgressUpdater* updater
+		size_t* count, size_t* seed, ProgressUpdater* updater
 	):
-		nodes(dimensions, node_path), queries(dimensions, query_path),
+		nodes(dimensions, node_path, count), queries(dimensions, query_path, count),
 		seed(this->create_seed(seed)), updater(updater), bruteforce_time(0)
 	{
-		this->k = this->bruteforce.load(bruteforce_path, this->nodes, this->queries.count);
+		if(count)
+		{
+			this->k = 10;
+			this->start_bruteforce();
+		}
+		else
+			this->k = this->bruteforce.load(bruteforce_path, this->nodes, this->queries.count);
 	}
-    void BenchmarkRunner::add(Config* config, vector<size_t> ef)
-    {
+	void BenchmarkRunner::add(Config* config, vector<size_t> ef)
+	{
 		auto& benchmark = this->benchmarks.emplace_back(config);
 		benchmark.run(this->bruteforce, this->nodes, this->queries, ef, this->k, this->seed, this->updater);
-    }
+	}
 	size_t BenchmarkRunner::get_query_count()
 	{
 		return this->queries.count;

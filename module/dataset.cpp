@@ -4,11 +4,23 @@
 
 namespace mch
 {
-	Dataset::Dataset(size_t dimensions, const char* path):
+	Dataset::Dataset(size_t dimensions, const char* path, size_t* count):
 		dimensions(dimensions)
 	{
 		this->coords = load_file_data<float>(path, this->count);
 		this->count /= this->dimensions;
+
+		if(count)
+		{
+			auto temp = this->coords;
+
+			this->count = *count;
+			size_t length = this->count * this->dimensions;
+			this->coords = new float[length];
+			
+			memcpy(this->coords, temp, length);
+			delete[] temp;
+		}
 
 		if(!this->coords)
 			crashf("File %s could not be opened.\n", path);
